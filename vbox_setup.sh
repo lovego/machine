@@ -50,7 +50,7 @@ setup_vbox_share_folder() {
   rcvboxadd status  # check if has problems
 
   # 依赖vbox自动挂载，将当前用户添加到vboxsf用户组
-  sudo usermod -a -G vboxsf $(id -nu)
+  sudo usermod -aG vboxsf $(id -nu)
 
   # 如果需要自定义挂载，追加如下配置到/etc/fstab
   # D_DRIVE /mnt/share vboxsf rw,gid=100,uid=1000,umask=022,auto,_netdev,nofail 0   0
@@ -58,9 +58,9 @@ setup_vbox_share_folder() {
   # 验证vboxsf文件系统类型正确，虽然报错，只要不是报vboxsf文件系统类型错误，就OK。
   output=$(sudo mount -t vboxsf D_DRIVE /mnt 2>&1)
   if test "$output" = '/sbin/mount.vboxsf: mounting failed with the error: No such device'; then
-    echo setup share folder success.
+    echo 'setup share folder success.'
   else
-    echo "$output"
+    echo "setup share folder failed: $output"
   fi
 }
 

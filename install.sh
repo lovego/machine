@@ -1,11 +1,13 @@
 #!/bin/bash
 
+set -ex
+
 main() {
   setup_sudo_no_password
-  install_docker
-  which nginx        || install nginx-core
-  which git          || install git
-  # install_databases
+  which go     || install_golang
+  which docker || install_docker
+  which nginx  || apt_install nginx-core
+  which git    || apt_install git
 }
 
 setup_sudo_no_password() {
@@ -14,44 +16,28 @@ setup_sudo_no_password() {
   test -f "$file"  || echo "$username  ALL=NOPASSWD: ALL" | sudo tee --append "$file" > /dev/null
 }
 
-install_docker() {
-  which docker && return
-  sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 \
-    --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-
-  echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" | sudo tee /etc/apt/sources.list.d/docker.list
-  sudo apt-get update
-  sudo apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual docker-engine
-  sudo usermod -aG docker $(id -un)
+install_golang() {
+  wget -O /tmp/go.tar.gz https://redirector.gvt1.com/edgedl/go/go1.8.5.linux-amd64.tar.gz
+  sudo tar -C /usr/local -xzf /tmp/go.tar.gz
 }
 
-install() {
+install_docker() {
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  sudo apt-key fingerprint 0EBFCD88 # Verify fingerprint
+  sudo add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+  sudo apt-get update
+  sudo apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual docker-ce
+  sudo usermod -aG docker $(id -nu)
+}
+
+apt_install() {
   # 超过3天没更新源
   if test -n "`find /var/lib/apt/periodic/update-success-stamp -mtime +2`"; then
     sudo apt-get update --fix-missing
   fi
   sudo apt-get install -y "$1"
-}
-
-install_databases() {
-  which redis-server || install redis-server
-  install_mysql_server
-  install_mongodb_shell
-}
-
-install_mysql_server() {
-  which mysqld && return
-  sudo debconf-set-selections <<< "mysql-server-5.6 mysql-server/root_password password root"
-  sudo debconf-set-selections <<< "mysql-server-5.6 mysql-server/root_password_again password root"
-  install mysql-server-5.6
-}
-
-install_mongodb_shell() {
-  which mongo && return
-  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
-  echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
-  sudo apt-get update
-  sudo apt-get install -y mongodb-org-shell
 }
 
 main
