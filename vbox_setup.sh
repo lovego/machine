@@ -1,10 +1,14 @@
 #!/bin/bash
 
-# 1. 使用VirtualBox安装Ubuntu16.04 初始GuestOS
+# 1. 使用VirtualBox安装ubuntu-16.04-initial
 # 2. 添加Host-only网卡
 # 3. 设置共享文件夹（D盘自动挂载），挂载VBoxGuestAdditions.iso镜像。
-# 4. NAT网卡设置22端口转发，使用终端登录GuestOS
-# 5. 运行该脚本 curl -s https://raw.githubusercontent.com/lovego/machine/master/vbox_setup.sh | bash -s
+# 4. NAT网卡设置22端口转发
+
+# 5. 复制ubuntu-16.04-initial，使用终端登录
+# 6. 运行该脚本 curl -s https://raw.githubusercontent.com/lovego/machine/master/vbox_setup.sh | bash -s
+# 7. 验证Host-only，删除端口转发，使用IP:192.168.56.15登录
+# 8. 重启，验证共享目录
 
 set -ex
 
@@ -46,6 +50,7 @@ setup_vbox_share_folder() {
 
   # 如果需要自定义挂载，追加如下配置到/etc/fstab
   # D_DRIVE /mnt/share vboxsf rw,gid=100,uid=1000,umask=022,auto,_netdev,nofail 0   0
+  sudo mount -t vboxsf D_DRIVE /mnt
 }
 
 main
