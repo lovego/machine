@@ -9,9 +9,12 @@
 
 # 生成新虚拟机
 # 1. 复制ubuntu-16.04-initial，使用终端登录
-# 2. 运行该脚本 curl -s https://raw.githubusercontent.com/lovego/machine/master/vbox_setup.sh | bash -s
-# 3. 验证Host-only，删除端口转发，使用IP:192.168.56.15登录
-# 4. 重启，验证共享目录
+# 2. 运行该脚本: `curl -s https://raw.githubusercontent.com/lovego/machine/master/vbox_setup.sh | bash -s`
+# 3. 验证Host-only网卡IP: `ifconfig`
+# 4. 验证挂载的共享目录: `sudo ls /mnt`
+# 5. 删除端口转发，重启
+# 6. 使用Host-only IP（192.168.56.15）登录
+# 7. 验证共享目录: `ls /media/sf_D_DRIVE`
 
 set -ex
 
