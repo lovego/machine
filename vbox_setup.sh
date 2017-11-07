@@ -37,7 +37,7 @@ netmask 255.255.255.0
 setup_vbox_share_folder() {
   # install guest additions
   sudo apt-get install -y gcc make perl  # prepare to build external kernel modules
-  sudo rcvboxadd setup
+  # sudo rcvboxadd setup  # check if has problems
   sudo mount -t auto /dev/cdrom /media/cdrom # 挂载iso
   sudo /media/cdrom/VBoxLinuxAdditions.run
 
