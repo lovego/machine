@@ -1,14 +1,17 @@
 #!/bin/bash
 
+# 设置初始虚拟机
 # 1. 使用VirtualBox安装ubuntu-16.04-initial
-# 2. 添加Host-only网卡
-# 3. 设置共享文件夹（D盘自动挂载），挂载VBoxGuestAdditions.iso镜像。
-# 4. NAT网卡设置22端口转发
+# 2. NAT网卡设置22端口转发
+# 3. 添加Host-only网卡
+# 4. 挂载VBoxGuestAdditions.iso镜像。
+# 5. 设置共享文件夹（D盘自动挂载）
 
-# 5. 复制ubuntu-16.04-initial，使用终端登录
-# 6. 运行该脚本 curl -s https://raw.githubusercontent.com/lovego/machine/master/vbox_setup.sh | bash -s
-# 7. 验证Host-only，删除端口转发，使用IP:192.168.56.15登录
-# 8. 重启，验证共享目录
+# 生成新虚拟机
+# 1. 复制ubuntu-16.04-initial，使用终端登录
+# 2. 运行该脚本 curl -s https://raw.githubusercontent.com/lovego/machine/master/vbox_setup.sh | bash -s
+# 3. 验证Host-only，删除端口转发，使用IP:192.168.56.15登录
+# 4. 重启，验证共享目录
 
 set -ex
 
