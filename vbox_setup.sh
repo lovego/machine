@@ -6,7 +6,7 @@
 # 4. NAT网卡设置22端口转发，使用终端登录GuestOS
 # 5. 运行该脚本 curl -s https://raw.githubusercontent.com/lovego/machine/master/vbox_setup.sh | bash -s
 
-set -e
+set -ex
 
 main() {
   setup_sudo_no_password
