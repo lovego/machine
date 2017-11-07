@@ -2,14 +2,16 @@
 
 # 1. 使用VirtualBox安装Ubuntu16.04 初始GuestOS
 # 2. 添加Host-only网卡
-# 3. 设置22端口转发，使用终端登录GuestOS
-# 4. 运行该脚本
+# 3. 设置共享文件夹（D盘自动挂载），挂载VBoxGuestAdditions.iso镜像。
+# 4. NAT网卡设置22端口转发，使用终端登录GuestOS
+# 5. 运行该脚本 curl -s https://raw.githubusercontent.com/lovego/machine/master/vbox_setup.sh | bash -s
 
 set -e
 
 main() {
   setup_sudo_no_password
   setup_vbox_hostonly_network
+  setup_vbox_share_folder
 }
 
 setup_sudo_no_password() {
@@ -28,21 +30,23 @@ iface enp0s8 inet static
 address 192.168.56.15
 netmask 255.255.255.0
 ' | sudo tee --append $file > /dev/null
-  sudo ifdown enp0s8 && sudo ifup enp0s8
-}
-
-setup_vbox_guest_addtions() {
-  sudo apt-get install -y gcc make perl
-  sudo rcvboxadd setup
-  # 需要先挂载好VBoxGuestAdditions.iso
-  sudo mount -t auto /dev/cdrom /media/cdrom
-  sudo /media/cdrom/VBoxLinuxAdditions.run
+  sudo ifdown enp0s8
+  sudo ifup enp0s8
 }
 
 setup_vbox_share_folder() {
-  # 需要先设置好共享文件夹
-  # auto mount by vbox
+  # install guest additions
+  sudo apt-get install -y gcc make perl  # prepare to build external kernel modules
+  sudo rcvboxadd setup
+  sudo mount -t auto /dev/cdrom /media/cdrom # 挂载iso
+  sudo /media/cdrom/VBoxLinuxAdditions.run
+
+  # 依赖vbox自动挂载，将当前用户添加到vboxsf用户组
   sudo usermod -a -G vboxsf $(id -nu)
+
+  # 如果需要自定义挂载，追加如下配置到/etc/fstab
+  # D_DRIVE /mnt/share vboxsf rw,gid=100,uid=1000,umask=022,auto,_netdev,nofail 0   0
 }
 
 main
+
