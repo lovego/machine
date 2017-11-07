@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# curl -s https://raw.githubusercontent.com/lovego/machine/master/install.sh | bash -s
+
 set -ex
 
 main() {
@@ -19,6 +21,10 @@ setup_sudo_no_password() {
 install_golang() {
   wget -O /tmp/go.tar.gz https://redirector.gvt1.com/edgedl/go/go1.8.5.linux-amd64.tar.gz
   sudo tar -C /usr/local -xzf /tmp/go.tar.gz
+  echo '
+  export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+  export GOPATH=$HOME/go
+  ' >> ~/.profile
 }
 
 install_docker() {
