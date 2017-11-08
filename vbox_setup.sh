@@ -19,7 +19,7 @@ set -ex
 main() {
   setup_sudo_no_password
   setup_vbox_hostonly_network
-  setup_vbox_share_folder
+  which rcvboxadd || setup_vbox_share_folder
 }
 
 setup_sudo_no_password() {
