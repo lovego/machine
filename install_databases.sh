@@ -4,7 +4,7 @@ set -ex
 
 main() {
   which redis-server || apt_install redis-server
-  which mysql || apt_install mysql-client-5.6
+  which mysql || apt_install mysql-client-5.7
   which mongo || install_mongodb_shell
   # which mysqld || install_mysql_server
 }
