@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 main() {
   which redis-server || apt_install redis-server
   which mysql || apt_install mysql-client-5.6
