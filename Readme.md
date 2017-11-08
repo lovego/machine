@@ -1,9 +1,9 @@
 # <a href="http://github.com/lovego/xiaomei">xiaomei</a>开发机（VirtualBox虚拟机）
 
-### 下载、导入
+从<a target="_blank" href="https://pan.baidu.com/s/1bUXuEi">百度网盘</a>下载虚拟机镜像，然后使用VirtualBox导入。
 
 ### SSH登录
-推荐使用无界面方式启动虚拟机，然后使用自己喜欢的终端（Putty、SecureCRT、XShell）登录。
+推荐使用无界面方式启动虚拟机，然后使用自己喜欢的终端登录，如Putty、SecureCRT、XShell等。
 ```
   IP：    192.168.56.15
   用户名：ubuntu
