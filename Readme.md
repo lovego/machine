@@ -11,6 +11,7 @@
   用户名：ubuntu
   密码：  go
 ```
+重要的事情说三遍：不要使用虚拟机自带的窗口界面来操作，这个界面分辨率太低，字体太难看，无法显示非英文字符，无法支持拷贝粘贴。使用你喜欢的终端连接虚拟机操作，生活会更美好。
 
 ### 共享文件夹
 
@@ -23,7 +24,7 @@
 3. Docker CE 17.09
 4. Nginx 1.10.3
 5. Git 2.7.4
-6. Redis Server 3.0.6, Redis Cli 3.0.6
+6. Redis Cli 3.0.6
 7. Mysql Client 5.7
 8. Mongo Shell 3.4
 
@@ -39,3 +40,11 @@ echo '{
 }' | sudo tee /etc/docker/daemon.json > /dev/null
 sudo service docker restart
 ```
+
+#### 2. 重启网卡
+Host待机后或者更换网络环境（比如从办公室回到家里），虚拟机的网络就无法正确连接了。
+```
+sudo ifdown enp0s3; sudo ifup enp0s3;
+```
+执行这两条命令重启一下网卡就可以了。
+
