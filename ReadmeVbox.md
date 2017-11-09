@@ -10,5 +10,5 @@
 2. 运行该脚本: `curl -s https://raw.githubusercontent.com/lovego/machine/master/setup.sh | bash -s`
 3. 删除NAT网卡22端口转发，重启
 4. 使用Host-only IP（192.168.56.15）登录
-5. 验证共享目录: `ls /media/sf_D_DRIVE`
+5. 验证共享目录: `ll /mnt/share`
 
