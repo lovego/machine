@@ -3,7 +3,7 @@
 2. 设置NAT网卡22端口转发
 3. 添加Host-only网卡
 4. 挂载VBoxGuestAdditions.iso镜像
-5. 设置共享文件夹（D盘，不自动挂载）
+5. 设置共享文件夹（D盘，D_DRIVE，不自动挂载）
 
 ### 生成开发机
 1. 复制ubuntu-16.04-initial，使用终端登录

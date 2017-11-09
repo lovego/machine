@@ -55,6 +55,7 @@ setup_sudo_no_password() {
 }
 
 setup_vim() {
+  test -z $EDITOR && { echo 'export EDITOR=vim' >> ~/.profile }
   test -f ~/.vimrc && return
   which git || apt_install git
   git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
@@ -112,9 +113,9 @@ install_golang() {
   wget -O /tmp/go.tar.gz https://storage.googleapis.com/golang/go1.8.5.linux-amd64.tar.gz
   sudo tar -C /usr/local -xzf /tmp/go.tar.gz
   echo '
-  export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-  export GOPATH=$HOME/go
-  ' >> ~/.profile
+export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+export GOPATH=$HOME/go
+' >> ~/.profile
   go get -v github.com/lovego/xiaomei/...
 }
 
