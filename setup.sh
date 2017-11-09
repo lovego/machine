@@ -43,9 +43,9 @@ main() {
   which mongo     || { add_mongo3_source; apt_install mongodb-org-shell; }
 
   # database servers
-  test -n "$redis_server" || which redis-server || apt_install redis-server
-  test -n "$mysql_server" || which mysqld       || install_mysql_server
-  test -n "$mongo_server" || which mongod       || { add_mongo3_source; apt_install mongodb-org-server; }
+  test -z "$redis_server" || which redis-server || apt_install redis-server
+  test -z "$mysql_server" || which mysqld       || install_mysql_server
+  test -z "$mongo_server" || which mongod       || { add_mongo3_source; apt_install mongodb-org-server; }
 }
 
 setup_sudo_no_password() {
@@ -87,7 +87,7 @@ netmask 255.255.255.0
 }
 
 setup_vbox_share_folder() {
-  fgrep vboxsf /proc/filesystems && return
+  fgrep vboxsf /proc/filesystems > /dev/null && return
 
   # install guest additions
   apt_install -y gcc make perl  # prepare to build external kernel modules
@@ -99,7 +99,7 @@ setup_vbox_share_folder() {
   sudo usermod -aG vboxsf $(id -nu)
 
   # 自定义挂载
-  if ! fgrep /mnt/share /etc/fstab; then
+  if ! fgrep /mnt/share /etc/fstab > /dev/null; then
    echo 'D_DRIVE /mnt/share vboxsf rw,gid=1000,uid=1000,dmode=755,fmode=644,auto,_netdev 0 0' |
    sudo tee --append /etc/fstab > /dev/null
   fi
