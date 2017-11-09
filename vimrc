@@ -15,6 +15,7 @@ Plugin 'godlygeek/tabular'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'ntpeters/vim-better-whitespace'
 Plugin 'fatih/vim-go'
+Plugin 'chr4/nginx.vim'
 Plugin 'ekalinin/Dockerfile.vim'
 Plugin 'solarnz/thrift.vim'
 

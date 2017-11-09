@@ -113,7 +113,10 @@ setup_vbox_share_folder() {
 }
 
 install_golang() {
-  wget -O /tmp/go.tar.gz https://storage.googleapis.com/golang/go1.8.5.linux-amd64.tar.gz
+  url=https://storage.googleapis.com/golang/go1.8.5.linux-amd64.tar.gz
+  for ((i=0; i<10; i++)); do
+    wget -T 10 -cO /tmp/go.tar.gz $url && break
+  done
   sudo tar -C /usr/local -xzf /tmp/go.tar.gz
   echo '
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
