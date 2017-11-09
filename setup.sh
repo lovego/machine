@@ -113,10 +113,10 @@ setup_vbox_share_folder() {
 }
 
 install_golang() {
-  url=https://storage.googleapis.com/golang/go1.8.5.linux-amd64.tar.gz
-  for ((i=0; i<60; i++)); do
-    wget -T 10 -cO /tmp/go.tar.gz $url || break
-  done
+  # https://storage.googleapis.com/golang/go1.8.5.linux-amd64.tar.gz
+  # 百度网盘下载页面：https://pan.baidu.com/s/1eSpidSQ
+  url='https://nj01ct01.baidupcs.com/file/0849be2c27d56de985f8fe48505519ad?bkt=p3-000087d03a64c9599a697ec386fb256ea5bb&fid=1645080762-250528-264707197517289&time=1510233980&sign=FDTAXGERLQBHSK-DCb740ccc5511e5e8fedcff06b081203-IGYTGKCAL2cnPWCFperNIiXzv7Q%3D&to=63&size=99077377&sta_dx=99077377&sta_cs=0&sta_ft=gz&sta_ct=0&sta_mt=0&fm2=MH,Yangquan,Anywhere,,sichuan,ct&newver=1&newfm=1&secfm=1&flow_ver=3&pkey=000087d03a64c9599a697ec386fb256ea5bb&sl=79364174&expires=8h&rt=sh&r=290903054&mlogid=7256878829166723571&vuk=1645080762&vbdid=1754556945&fin=go1.8.5.linux-amd64.tar.gz&fn=go1.8.5.linux-amd64.tar.gz&rtype=1&iv=0&dp-logid=7256878829166723571&dp-callid=0.1.1&hps=1&tsl=100&csl=100&csign=JLGvAFRj74g4Zpggs4fgn8%2FipQw%3D&so=0&ut=6&uter=4&serv=0&uc=62957963&ic=1575768269&ti=691b2597eaee71363546f79341fb9351646bbbc9c6fda23b&by=themis'
+  wget -T 10 -cO /tmp/go.tar.gz "$url"
   sudo tar -C /usr/local -xzf /tmp/go.tar.gz
   echo '
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
