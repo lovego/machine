@@ -55,7 +55,7 @@ setup_sudo_no_password() {
 }
 
 setup_vim() {
-  test -z $EDITOR && { echo 'export EDITOR=vim' >> ~/.profile }
+  test -z $EDITOR && { echo 'export EDITOR=vim' >> ~/.profile; }
   test -f ~/.vimrc && return
   which git || apt_install git
   git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
