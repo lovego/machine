@@ -32,20 +32,23 @@ main() {
   fi
 
   # required core components
-  which go     || install_golang
-  which docker || install_docker
-  which nginx  || apt_install nginx-core
-  which git    || apt_install git
+  which go     >/dev/null || install_golang
+  which docker >/dev/null || install_docker
+  which nginx  >/dev/null || apt_install nginx-core
+  which git    >/dev/null || apt_install git
 
   # database clients
-  which redis-cli || apt_install redis-tools
-  which mysql     || apt_install mysql-client
-  which mongo     || { add_mongo3_source; apt_install mongodb-org-shell; }
+  which redis-cli >/dev/null || apt_install redis-tools
+  which mysql     >/dev/null || apt_install mysql-client
+  which mongo     >/dev/null || { add_mongo3_source; apt_install mongodb-org-shell; }
 
   # database servers
-  test -z "$redis_server" || which redis-server || apt_install redis-server
-  test -z "$mysql_server" || which mysqld       || install_mysql_server
-  test -z "$mongo_server" || which mongod       || { add_mongo3_source; apt_install mongodb-org-server; }
+  test -z "$redis_server" || which redis-server >/dev/null || apt_install redis-server
+  test -z "$mysql_server" || which mysqld       >/dev/null || install_mysql_server
+  test -z "$mongo_server" || which mongod       >/dev/null || {
+    add_mongo3_source
+    apt_install mongodb-org-server
+  }
 }
 
 setup_sudo_no_password() {
@@ -57,7 +60,7 @@ setup_sudo_no_password() {
 setup_vim() {
   test -z $EDITOR && { echo 'export EDITOR=vim' >> ~/.profile; }
   test -f ~/.vimrc && return
-  which git || apt_install git
+  which git >/dev/null || apt_install git
   git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
   wget -O ~/.vimrc https://raw.githubusercontent.com/lovego/machine/master/vimrc
   vim +PluginInstall +qall
@@ -88,25 +91,25 @@ netmask 255.255.255.0
 }
 
 setup_vbox_share_folder() {
-  fgrep vboxsf /proc/filesystems > /dev/null && return
+  which mount.vboxsf >/dev/null && return
 
   # install guest additions
-  apt_install -y gcc make perl  # prepare to build external kernel modules
+  apt_install gcc make # prepare to build external kernel modules
   sudo mount -t auto /dev/cdrom /media/cdrom # 挂载iso
   sudo /media/cdrom/VBoxLinuxAdditions.run || true
-  rcvboxadd status  # check if has problems
+
+  # 验证vboxsf文件系统。
+  which mount.vboxsf >/dev/null || { echo "setup share folder failed."; exit 1; }
 
   # 支持自动挂载，将当前用户添加到vboxsf用户组
   sudo usermod -aG vboxsf $(id -nu)
 
   # 自定义挂载
   if ! fgrep /mnt/share /etc/fstab > /dev/null; then
-   echo 'D_DRIVE /mnt/share vboxsf rw,gid=1000,uid=1000,dmode=755,fmode=644,auto,_netdev 0 0' |
-   sudo tee --append /etc/fstab > /dev/null
+    sudo mkdir /mnt/share && sudo chown ubuntu /mnt/share
+    echo 'D_DRIVE /mnt/share vboxsf rw,gid=1000,uid=1000,dmode=755,fmode=644,auto,_netdev 0 0' |
+    sudo tee --append /etc/fstab > /dev/null
   fi
-
-  # 验证vboxsf文件系统。
-  fgrep vboxsf /proc/filesystems > /dev/null || { echo "setup share folder failed."; exit 1; }
 }
 
 install_golang() {
