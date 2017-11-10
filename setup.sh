@@ -32,10 +32,11 @@ main() {
   fi
 
   # required core components
-  test -e /usr/local/go   || install_golang
-  which docker >/dev/null || install_docker
-  which nginx  >/dev/null || apt_install nginx-core
-  which git    >/dev/null || apt_install git
+  test -e /usr/local/go    || install_golang
+  which docker >/dev/null  || install_docker
+  which nginx  >/dev/null  || apt_install nginx-core
+  which git    >/dev/null  || apt_install git
+  test -e ~/go/bin/xiaomei || install_xiaomei
 
   # database clients
   which redis-cli >/dev/null || apt_install redis-tools
@@ -122,8 +123,6 @@ install_golang() {
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 export GOPATH=$HOME/go
 ' >> ~/.profile
-  /usr/local/go/bin/go get -d -v github.com/lovego/xiaomei/...
-  /usr/local/go/bin/go install github.com/lovego/xiaomei/xiaomei
 }
 
 install_docker() {
@@ -135,6 +134,22 @@ install_docker() {
   sudo apt-get update
   sudo apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual docker-ce
   sudo usermod -aG docker $(id -nu)
+}
+
+install_xiaomei() {
+  /usr/local/go/bin/go get -d -v github.com/lovego/xiaomei/...
+  /usr/local/go/bin/go install github.com/lovego/xiaomei/xiaomei
+
+  # pull bases images
+  docker pull hub.c.163.com/lovego/xiaomei/appserver
+  docker pull hub.c.163.com/lovego/xiaomei/tasks
+  docker pull hub.c.163.com/lovego/xiaomei/nginx
+  docker pull hub.c.163.com/lovego/xiaomei/logc
+  docker pull hub.c.163.com/lovego/xiaomei/godoc
+
+  ~/go/bin/xiaomei auto-complete
+  ~/go/bin/xiaomei workspace-godoc
+  ~/go/bin/xiaomei workspace-godoc access -s
 }
 
 apt_install() {
