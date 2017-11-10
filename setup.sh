@@ -122,7 +122,8 @@ install_golang() {
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 export GOPATH=$HOME/go
 ' >> ~/.profile
-  /usr/local/go/bin/go get -v github.com/lovego/xiaomei/...
+  /usr/local/go/bin/go get -d -v github.com/lovego/xiaomei/...
+  /usr/local/go/bin/go install github.com/lovego/xiaomei/xiaomei
 }
 
 install_docker() {
