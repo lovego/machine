@@ -32,7 +32,7 @@ main() {
   fi
 
   # required core components
-  which go     >/dev/null || install_golang
+  test -e /usr/local/go   || install_golang
   which docker >/dev/null || install_docker
   which nginx  >/dev/null || apt_install nginx-core
   which git    >/dev/null || apt_install git
@@ -58,7 +58,7 @@ setup_sudo_no_password() {
 }
 
 setup_vim() {
-  test -z $EDITOR && { echo 'export EDITOR=vim' >> ~/.profile; }
+  test -z $EDITOR && { echo -e "\nexport EDITOR=vim" >> ~/.profile; }
   test -f ~/.vimrc && return
   which git >/dev/null || apt_install git
   git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
@@ -122,9 +122,7 @@ install_golang() {
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 export GOPATH=$HOME/go
 ' >> ~/.profile
-  export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-  export GOPATH=$HOME/go
-  go get -v github.com/lovego/xiaomei/...
+  /usr/local/go/bin/go get -v github.com/lovego/xiaomei/...
 }
 
 install_docker() {
