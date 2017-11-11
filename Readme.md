@@ -11,7 +11,7 @@ VirtualBox虚拟机和安装脚本内容：
 
 ## VirtualBox开发机
 基于Ubuntu Server 16.04.3，使用一键安装脚本，生成了一个现成的开发环境虚拟机。
-从百度网盘下载虚拟机镜像 <a target="_blank" href="https://pan.baidu.com/s/1bUXuEi">develop-machine.ova</a>， 然后使用VirtualBox导入。
+从百度网盘下载虚拟机镜像 <a target="_blank" href="https://pan.baidu.com/s/1nv9mEFZ">develop-machine.ova</a>， 然后使用VirtualBox导入。
 
 #### SSH登录
 推荐使用无界面方式启动虚拟机，然后使用自己喜欢的终端登录，如Putty、SecureCRT、XShell等。
