@@ -5,6 +5,9 @@ set -ex
 main() {
   while test $# -gt 0; do
     case "$1" in
+      --production)
+        local production=true
+        shift ;;
       --redis-server)
         local redis_server=true
         shift ;;
@@ -25,18 +28,22 @@ main() {
   setup_vim
   setup_screen
 
-  # 通过检测vboxsf内核模块，判断是否是VirtualBox虚拟机
-  if modinfo vboxsf >/dev/null 2>&1; then
-    setup_vbox_hostonly_network
-    setup_vbox_share_folder
-  fi
-
   # required core components
-  test -e /usr/local/go    || install_golang
   which docker >/dev/null  || install_docker
   which nginx  >/dev/null  || apt_install nginx-core
-  which git    >/dev/null  || apt_install git
-  test -e ~/go/bin/xiaomei || install_xiaomei
+
+  if test -z "$production"; then
+    setup_nginx_default_server
+    which git >/dev/null     || apt_install git
+    test -e /usr/local/go    || install_golang
+    test -e ~/go/bin/xiaomei || install_xiaomei
+
+    # 通过检测vboxsf内核模块，判断是否是VirtualBox虚拟机
+    if modinfo vboxsf >/dev/null 2>&1; then
+      setup_vbox_hostonly_network
+      setup_vbox_share_folder
+    fi
+  fi
 
   # database clients
   which redis-cli >/dev/null || apt_install redis-tools
@@ -107,7 +114,7 @@ setup_vbox_share_folder() {
 
   # 自定义挂载
   if ! fgrep /mnt/share /etc/fstab > /dev/null; then
-    sudo mkdir /mnt/share && sudo chown ubuntu /mnt/share
+    sudo mkdir /mnt/share && sudo chown $(id -nu) /mnt/share
     echo 'D_DRIVE /mnt/share vboxsf rw,gid=1000,uid=1000,dmode=755,fmode=644,auto,_netdev 0 0' |
     sudo tee --append /etc/fstab > /dev/null
   fi
@@ -134,6 +141,15 @@ install_docker() {
   sudo apt-get update
   sudo apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual docker-ce
   sudo usermod -aG docker $(id -nu)
+}
+
+setup_nginx_default_server() {
+  echo "server {
+  listen 80 default_server;
+  root $HOME;
+  autoindex on;
+}" | sudo tee /etc/nginx/sites-available/default > /dev/null
+  sudo service nginx reload
 }
 
 install_xiaomei() {
@@ -171,7 +187,7 @@ add_mongo3_source() {
   test -e $file && return
   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv \
     0C49F3730359A14518585931BC711F9BA15703C6
-  echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" |
+  echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/3.4 multiverse" |
   sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
   sudo apt-get update
 }
