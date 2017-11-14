@@ -25,7 +25,7 @@ main() {
 
   # first of all, make life better.
   setup_sudo_no_password
-  setup_vim
+  setup_vim "$production"
   setup_screen
 
   # required core components
@@ -68,10 +68,17 @@ setup_sudo_no_password() {
 setup_vim() {
   test -z $EDITOR && { echo -e "\nexport EDITOR=vim" >> ~/.profile; }
   test -f ~/.vimrc && return
+  if test -n "$1"; then
+    wget -O ~/.vimrc https://raw.githubusercontent.com/lovego/machine/master/vimrc_production
+    return
+  fi
   which git >/dev/null || apt_install git
   git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
   wget -O ~/.vimrc https://raw.githubusercontent.com/lovego/machine/master/vimrc
-  vim +PluginInstall +qall
+  # for :GoInstallBinaries
+  git clone https://github.com/golang/tools ~/go/src/golang.org/x/tools
+  go install golang.org/x/tools/cmd/guru
+  vim +PluginInstall +GoInstallBinaries +qall
 }
 
 setup_screen() {
