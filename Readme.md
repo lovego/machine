@@ -29,12 +29,11 @@ VirtualBox虚拟机和安装脚本内容：
 2. 在虚拟机内将/etc/fstab的最后一行中D_DRIVE替换为共享文件夹的名字。
 3. 在虚拟机内执行sudo mount /mnt/share或重启虚拟机来挂载设置的共享文件夹。
 
-#### 重启网卡
-Host待机后或者更换网络环境（比如从办公室回到家里），虚拟机的网络就无法正确连接了。
+#### 重启网络
+Host更换网络环境后（比如从办公室回到家里），虚拟机如果是在更换网络环境之前启动的，需要执行以下命令重启一下网络。
 ```
-sudo ifdown enp0s3; sudo ifup enp0s3;
+sudo service networking restart
 ```
-执行这两条命令重启一下网卡就可以了。
 
 
 ## 一键安装脚本
