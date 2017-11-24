@@ -77,7 +77,7 @@ setup_vim() {
   wget -O ~/.vimrc https://raw.githubusercontent.com/lovego/machine/master/vimrc
   # for :GoInstallBinaries
   git clone https://github.com/golang/tools ~/go/src/golang.org/x/tools
-  go install golang.org/x/tools/cmd/guru
+  go install golang.org/x/tools/cmd/guru golang.org/x/tools/cmd/goimports
   vim +PluginInstall +GoInstallBinaries +qall
 }
 

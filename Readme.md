@@ -41,7 +41,7 @@ sudo ifdown enp0s3; sudo ifup enp0s3;
 如果你不想使用上面现成的虚拟机，可以直接使用一键安装脚本，来安装环境。 目前该脚本仅针对Ubuntu Server 16.04进行了测试。使用方式：
 
 ```
-curl -s https://raw.githubusercontent.com/lovego/machine/master/setup.sh | bash -s [options...]
+curl -s https://raw.githubusercontent.com/lovego/machine/master/setup.sh | bash -s [-- options...]
 ```
 选项列表：
 1. --production，表示安装的是生产环境，此时不会安装只有开发环境才需要的组件。
