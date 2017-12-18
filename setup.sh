@@ -67,6 +67,7 @@ setup_sudo_no_password() {
 
 setup_vim() {
   test -z $EDITOR && { echo -e "\nexport EDITOR=vim" >> ~/.profile; }
+  test -z $VISUAL && { echo -e "\nexport VISUAL=vim" >> ~/.profile; }
   test -f ~/.vimrc && return
   if test -n "$1"; then
     wget -O ~/.vimrc https://raw.githubusercontent.com/lovego/machine/master/vimrc_production
@@ -127,12 +128,33 @@ setup_vbox_share_folder() {
   fi
 }
 
+install_haproxy() {
+  sudo apt-get install -y libc6-dev-i386 libpcre3-dev # libssl-dev
+
+  cwd=$(pwd)
+
+  cd /tmp
+  wget -c https://www.openssl.org/source/openssl-1.0.2n.tar.gz
+  tar -zxf openssl.tar.gz
+  cd openssl-1.0.2n && ./config && make && make test && sudo make install
+
+  cd /tmp
+  wget -c http://www.haproxy.org/download/1.8/src/haproxy-1.8.1.tar.gz
+  tar -zxf haproxy-1.8.1.tar.gz
+  cd haproxy-1.8.1
+  make TARGET=linux2628 USE_PCRE=1 USE_OPENSSL=1 USE_ZLIB=1 SSL_INC=/usr/local/ssl/include SSL_LIB=/usr/local/ssl/lib
+  sudo make install
+
+  cd $(cwd)
+}
+
+
 install_golang() {
   # 原始地址： https://storage.googleapis.com/golang/go1.8.5.linux-amd64.tar.gz
   # 百度网盘：https://pan.baidu.com/s/1eSpidSQ
   url='http://oz5oikrwg.bkt.clouddn.com/go1.8.5.linux-amd64.tar.gz' # 七牛云存储
   wget -T 10 -cO /tmp/go.tar.gz "$url"
-  sudo tar -C /usr/local -xzf /tmp/go.tar.gz
+  sudo tar -C /usr/local -zxf /tmp/go.tar.gz
   echo '
 export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
 export GOPATH=$HOME/go
