@@ -129,6 +129,14 @@ setup_vbox_share_folder() {
 }
 
 install_haproxy() {
+  sudo apt-get install software-properties-common
+  sudo add-apt-repository ppa:vbernat/haproxy-1.8
+
+  sudo apt-get update
+  sudo apt-get install haproxy
+}
+
+install_haproxy_from_source() {
   sudo apt-get install -y libc6-dev-i386 libpcre3-dev # libssl-dev
 
   cwd=$(pwd)
