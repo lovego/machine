@@ -28,7 +28,8 @@ let g:buffergator_hsplit_size = 3
 let g:multi_cursor_exit_from_visual_mode = 0
 let g:multi_cursor_exit_from_insert_mode = 0
 
-set number hlsearch expandtab shiftwidth=2 tabstop=2
+syntax on
+set number ruler hlsearch expandtab shiftwidth=2 tabstop=2
 set fencs=utf8,gbk
 autocmd vimenter * NERDTree
 colo desert

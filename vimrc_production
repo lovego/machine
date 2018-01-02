@@ -1,5 +1,6 @@
 filetype plugin indent on
 
+syntax on
 set number hlsearch expandtab shiftwidth=2 tabstop=2
 set fencs=utf8,gbk
 colo desert

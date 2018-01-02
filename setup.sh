@@ -2,48 +2,32 @@
 
 set -ex
 
+os=$(uname)
+production=
+
 main() {
   while test $# -gt 0; do
     case "$1" in
-      --production)
-        local production=true
-        shift ;;
-      --redis-server)
-        local redis_server=true
-        shift ;;
-      --mysql-server)
-        local mysql_server=true
-        shift ;;
-      --mongo-server)
-        local mongo_server=true
-        shift ;;
-      *)
-        echo unknow option: "$1"
-        exit 1 ;;
+      --production  )
+        [ "$os" = Darwin ] && { echo "--production option not supported on MacOS."; exit 1; }
+        production=true; shift ;;
+      --redis-server) local redis_server=true; shift ;;
+      --mysql-server) local mysql_server=true; shift ;;
+      --mongo-server) local mongo_server=true; shift ;;
+      *             ) echo unknow option: "$1"; exit 1 ;;
     esac
   done
 
   # first of all, make life better.
   setup_sudo_no_password
-  setup_vim "$production"
   setup_screen
+  setup_vim
 
   # required core components
   which docker >/dev/null  || install_docker
   which nginx  >/dev/null  || apt_install nginx-core
 
-  if test -z "$production"; then
-    setup_nginx_default_server
-    which git >/dev/null     || apt_install git
-    test -e /usr/local/go    || install_golang
-    test -e ~/go/bin/xiaomei || install_xiaomei
-
-    # 通过检测vboxsf内核模块，判断是否是VirtualBox虚拟机
-    if modinfo vboxsf >/dev/null 2>&1; then
-      setup_vbox_hostonly_network
-      setup_vbox_share_folder
-    fi
-  fi
+  test -z "$production" && setup_development
 
   # database clients
   which redis-cli >/dev/null || apt_install redis-tools
@@ -82,26 +66,45 @@ setup_vim() {
   vim +PluginInstall +GoInstallBinaries +qall
 }
 
+setup_profile() {
+  test -z $CLICOLOR && { echo "export CLICOLOR=1" >> ~/.profile; source ~/.profile; }
+  test -z $LSCOLORS && { echo "export LSCOLORS=GxFxCxDxBxegedabagaced" >> ~/.profile; source ~/.profile; }
+}
+
 setup_screen() {
   test -f ~/.screenrc && return
   echo '
-startup_message off
-bell off
-vbell off
-caption always "%w"
-' > ~/.screenrc
+  startup_message off
+  bell off
+  vbell off
+  caption always "%w"
+  ' > ~/.screenrc
 }
+
+setup_development() {
+  setup_nginx_default_server
+  which git >/dev/null     || apt_install git
+  test -e /usr/local/go    || install_golang
+  test -e ~/go/bin/xiaomei || install_xiaomei
+
+  # 通过检测vboxsf内核模块，判断是否是VirtualBox虚拟机
+  if modinfo vboxsf >/dev/null 2>&1; then
+    setup_vbox_hostonly_network
+    setup_vbox_share_folder
+  fi
+}
+
 
 setup_vbox_hostonly_network() {
   test -e /sys/class/net/enp0s8 || return
   file=/etc/network/interfaces.d/host-only
   test -f $file && return
   echo '
-auto enp0s8
-iface enp0s8 inet static
-address 192.168.56.15
-netmask 255.255.255.0
-' | sudo tee $file > /dev/null
+  auto enp0s8
+  iface enp0s8 inet static
+  address 192.168.56.15
+  netmask 255.255.255.0
+  ' | sudo tee $file > /dev/null
   sudo ifdown enp0s8
   sudo ifup enp0s8
 }
@@ -124,7 +127,7 @@ setup_vbox_share_folder() {
   if ! fgrep /mnt/share /etc/fstab > /dev/null; then
     sudo mkdir /mnt/share && sudo chown $(id -nu) /mnt/share
     echo 'D_DRIVE /mnt/share vboxsf rw,gid=1000,uid=1000,dmode=755,fmode=644,auto,_netdev 0 0' |
-    sudo tee --append /etc/fstab > /dev/null
+      sudo tee --append /etc/fstab > /dev/null
   fi
 }
 
@@ -164,9 +167,9 @@ install_golang() {
   wget -T 10 -cO /tmp/go.tar.gz "$url"
   sudo tar -C /usr/local -zxf /tmp/go.tar.gz
   echo '
-export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-export GOPATH=$HOME/go
-' >> ~/.profile
+  export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+  export GOPATH=$HOME/go
+  ' >> ~/.profile
 }
 
 install_docker() {
@@ -186,7 +189,7 @@ setup_nginx_default_server() {
   root $HOME;
   autoindex on;
 }" | sudo tee /etc/nginx/sites-available/default > /dev/null
-  sudo service nginx reload
+sudo service nginx reload
 }
 
 install_xiaomei() {
@@ -225,7 +228,7 @@ add_mongo3_source() {
   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv \
     0C49F3730359A14518585931BC711F9BA15703C6
   echo "deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/3.4 multiverse" |
-  sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+    sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
   sudo apt-get update
 }
 
