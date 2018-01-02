@@ -71,12 +71,16 @@ setup_vim_production() {
 }
 
 install_golang() {
-  # 原始地址：https://storage.googleapis.com/golang/go1.8.5.linux-amd64.tar.gz
-  # 百度网盘：https://pan.baidu.com/s/1eSpidSQ
-  url='http://oz5oikrwg.bkt.clouddn.com/go1.8.5.linux-amd64.tar.gz' # 七牛云存储
-  wget -T 10 -cO /tmp/go.tar.gz "$url"
-  sudo tar -C /usr/local -zxf /tmp/go.tar.gz
-  echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin GOPATH=$HOME/go' >> ~/.profile
+  if [ "$os" = Darwin ]; then
+    install_pkg go
+  else
+    # 原始地址：https://storage.googleapis.com/golang/go1.8.5.linux-amd64.tar.gz
+    # 百度网盘：https://pan.baidu.com/s/1eSpidSQ
+    url='http://oz5oikrwg.bkt.clouddn.com/go1.8.5.linux-amd64.tar.gz' # 七牛云存储
+    wget -T 10 -cO /tmp/go.tar.gz "$url"
+    sudo tar -C /usr/local -zxf /tmp/go.tar.gz
+    echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin GOPATH=$HOME/go' >> ~/.profile
+  fi
   source ~/.profile
 }
 
@@ -92,9 +96,9 @@ install_xiaomei() {
   docker pull hub.c.163.com/lovego/xiaomei/logc
   docker pull hub.c.163.com/lovego/xiaomei/godoc
 
-  ~/go/bin/xiaomei auto-complete
-  ~/go/bin/xiaomei workspace-godoc
-  ~/go/bin/xiaomei workspace-godoc access -s
+  xiaomei auto-complete
+  xiaomei workspace-godoc
+  xiaomei workspace-godoc access -s
 }
 
 setup_vim_development() {
@@ -154,6 +158,7 @@ setup_vbox_share_folder() {
 
 install_docker() {
   if [ $os = Darwin ]; then
+    ensure_brew
     brew cask install docker
     launchctl submit -l docker -- /Applications/Docker.app/Contents/MacOS/Docker
     # wget https://download.docker.com/mac/stable/Docker.dmg
@@ -175,18 +180,24 @@ install_docker() {
 install_nginx() {
   if [ $os = Darwin ]; then
     install_pkg nginx
+    sudo brew services start nginx
   else
     install_pkg nginx-core
   fi
 }
 
 setup_nginx_server() {
-  echo "server {
+  conf="server {
   listen 80 default_server;
   root $HOME;
   autoindex on;
-}" | sudo tee /etc/nginx/sites-available/default > /dev/null
-  sudo service nginx reload
+}"
+  if [ $os = Darwin ]; then
+    echo "$conf" | sudo tee /usr/local/etc/nginx/servers/default > /dev/null
+  else
+    echo "$conf" | sudo tee /etc/nginx/sites-available/default > /dev/null
+    sudo service nginx reload
+  fi
 }
 
 install_haproxy() {
@@ -199,7 +210,6 @@ install_haproxy() {
 
 install_haproxy_from_source() {
   sudo apt-get install -y libc6-dev-i386 libpcre3-dev # libssl-dev
-
   cwd=$(pwd)
 
   cd /tmp
@@ -219,14 +229,19 @@ install_haproxy_from_source() {
 
 install_pkg() {
   if [ "$os" = Darwin ]; then
+    ensure_brew
     brew install "$@"
+  else
+    # 超过10天没更新源
+    if test -n "`find /var/lib/apt/periodic/update-success-stamp -mtime +9`"; then
+      sudo apt-get update --fix-missing
+    fi
+    sudo apt-get install -y "$@"
   fi
+}
 
-  # 超过10天没更新源
-  if test -n "`find /var/lib/apt/periodic/update-success-stamp -mtime +9`"; then
-    sudo apt-get update --fix-missing
-  fi
-  sudo apt-get install -y "$@"
+ensure_brew() {
+  which brew || /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 }
 
 main
