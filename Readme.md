@@ -1,16 +1,36 @@
 # <a href="http://github.com/lovego/xiaomei">xiaomei</a>开发、生产环境安装
-machine提供了一个基于Ubuntu的VirtualBox开发机，导入该虚拟机，就可以立即上手开发。
-同时提供了一个基于Ubuntu的开发、生产环境一键安装脚本。
 
-VirtualBox虚拟机和安装脚本内容：
-1. 首先，为了让生活更美好，对sudo、vim、screen进行了配置。
-2. 其次，安装Docker、Nginx这两个必需组件。
-3. 如果是开发环境，则安装git、go、xiaomei。
-4. 安装redis、mysql、mongo客户端。
-5. 可选的安装redis、mysql、mongo服务器（默认都不安装）。
+
+
+## 环境安装脚本
+该脚本适用于Ubuntu、macOS，包含内容：
+1. 首先，为了让生活更美好，对sudo、profile、screen进行了配置。
+2. 如果是生产环境简单设置vim；如果是开发环境，则安装git、go、xiaomei，设置vim开发环境。
+3. 安装Docker、Nginx这两个必需组件。
+
+使用方式：
+```
+curl -s https://raw.githubusercontent.com/lovego/machine/master/setup.sh | bash -s [-- options...]
+```
+选项列表：
+1. --production，表示仅安装生产环境才需要的组件。
+
+
+
+## 数据库安装脚本
+该脚本适用于Ubuntu、macOS。使用方式：
+```
+curl -s https://raw.githubusercontent.com/lovego/machine/master/setup_db.sh | bash -s [-- options...]
+```
+选项列表：
+1. --redis-server，表示需要安装redis服务器
+2. --mysql-server，表示需要安装mysql服务器
+3. --mongo-server，表示需要安装mongo服务器
+
+
 
 ## VirtualBox开发机
-基于Ubuntu Server 16.04.3，使用一键安装脚本，生成了一个现成的开发环境虚拟机。
+我们基于Ubuntu Server 16.04.3，使用上面的安装脚本，生成了一个现成的开发环境虚拟机。导入该虚拟机，就可以立即上手开发。
 从百度网盘下载虚拟机镜像 <a target="_blank" href="https://pan.baidu.com/s/1nv9mEFZ">develop-machine.ova</a>， 然后使用VirtualBox导入。
 
 #### SSH登录
@@ -35,18 +55,6 @@ Host更换网络环境后（比如从办公室回到家里），虚拟机如果�
 sudo service networking restart
 ```
 
-
-## 一键安装脚本
-如果你不想使用上面现成的虚拟机，可以直接使用一键安装脚本，来安装环境。 目前该脚本仅针对Ubuntu Server 16.04进行了测试。使用方式：
-
-```
-curl -s https://raw.githubusercontent.com/lovego/machine/master/setup.sh | bash -s [-- options...]
-```
-选项列表：
-1. --production，表示安装的是生产环境，此时不会安装只有开发环境才需要的组件。
-2. --redis-server，表示需要安装redis服务器
-3. --mysql-server，表示需要安装mysql服务器
-4. --mongo-server，表示需要安装mongo服务器
 
 
 ## 自定义设置
