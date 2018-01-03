@@ -15,24 +15,24 @@ main() {
   # first of all, make life better.
   setup_sudo_no_password
   setup_profile
-  setup_screenrc
+  setup_screen
   which wget >/dev/null || install_pkg wget
 
   if [ "$production" = true ]; then
     setup_vim_production
   else
-    which git >/dev/null     || install_pkg git
-    test -e /usr/local/go    || install_golang
-    test -e ~/go/bin/xiaomei || install_xiaomei
+    which git >/dev/null || install_pkg git
+    install_golang
+    install_xiaomei
     setup_vim_development
     setup_virtualbox
   fi
 
   # required core components
   which docker >/dev/null  || install_docker
-  which nginx  >/dev/null  || install_nginx
-  if [ "$production" != true ]; then
-    setup_nginx_server
+  if ! which nginx  >/dev/null; then
+    install_nginx
+    [ -z "$production" ] && setup_nginx_server
   fi
 }
 
@@ -48,13 +48,13 @@ setup_profile() {
     source ~/.profile
   fi
 
-  if [[ "$os" = Darwin && (-z $CLICOLOR -o -z $LSCOLORS) ]]; then
+  if [[ "$os" = Darwin && (-z $CLICOLOR || -z $LSCOLORS) ]]; then
     echo "export CLICOLOR=1 LSCOLORS=GxFxCxDxBxegedabagaced" >> ~/.profile
     source ~/.profile
   fi
 }
 
-setup_screenrc() {
+setup_screen() {
   test -f ~/.screenrc && return
   echo '
   startup_message off
@@ -64,15 +64,16 @@ setup_screenrc() {
   ' > ~/.screenrc
 }
 
-
 setup_vim_production() {
   test -f ~/.vimrc ||
     wget -O ~/.vimrc https://raw.githubusercontent.com/lovego/machine/master/vimrc_production
 }
 
 install_golang() {
+  which go >/dev/null && return
   if [ "$os" = Darwin ]; then
-    install_pkg go
+    brew_install go
+    echo 'export PATH=$PATH:$HOME/go/bin GOPATH=$HOME/go' >> ~/.profile
   else
     # 原始地址：https://storage.googleapis.com/golang/go1.8.5.linux-amd64.tar.gz
     # 百度网盘：https://pan.baidu.com/s/1eSpidSQ
@@ -84,8 +85,8 @@ install_golang() {
   source ~/.profile
 }
 
-
 install_xiaomei() {
+  test -e ~/go/bin/xiaomei >/dev/null && return
   go get -d -v github.com/lovego/xiaomei/...
   go install github.com/lovego/xiaomei/xiaomei
 
@@ -96,9 +97,9 @@ install_xiaomei() {
   docker pull hub.c.163.com/lovego/xiaomei/logc
   docker pull hub.c.163.com/lovego/xiaomei/godoc
 
-  xiaomei auto-complete
-  xiaomei workspace-godoc
-  xiaomei workspace-godoc access -s
+  ~/go/bin/xiaomei auto-complete
+  ~/go/bin/xiaomei workspace-godoc
+  ~/go/bin/xiaomei workspace-godoc access -s
 }
 
 setup_vim_development() {
@@ -138,7 +139,7 @@ setup_vbox_share_folder() {
   which mount.vboxsf >/dev/null && return
 
   # install guest additions
-  install_pkg gcc make # prepare to build external kernel modules
+  apt_install gcc make # prepare to build external kernel modules
   sudo mount -t auto /dev/cdrom /media/cdrom # 挂载iso
   sudo /media/cdrom/VBoxLinuxAdditions.run || true
 
@@ -158,8 +159,7 @@ setup_vbox_share_folder() {
 
 install_docker() {
   if [ $os = Darwin ]; then
-    ensure_brew
-    brew cask install docker
+    brew_cask_install docker
     launchctl submit -l docker -- /Applications/Docker.app/Contents/MacOS/Docker
     # wget https://download.docker.com/mac/stable/Docker.dmg
     # sudo hdiutil attach Docker.dmg
@@ -179,10 +179,10 @@ install_docker() {
 
 install_nginx() {
   if [ $os = Darwin ]; then
-    install_pkg nginx
+    brew_install nginx
     sudo brew services start nginx
   else
-    install_pkg nginx-core
+    apt_install nginx-core
   fi
 }
 
@@ -229,20 +229,32 @@ install_haproxy_from_source() {
 
 install_pkg() {
   if [ "$os" = Darwin ]; then
-    ensure_brew
-    brew install "$@"
+    brew_install "$@"
   else
-    # 超过10天没更新源
-    if test -n "`find /var/lib/apt/periodic/update-success-stamp -mtime +9`"; then
-      sudo apt-get update --fix-missing
-    fi
-    sudo apt-get install -y "$@"
+    apt_install "$@"
   fi
 }
 
-ensure_brew() {
-  which brew || /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+apt_install() {
+  # 超过10天没更新源
+  if test -n "`find /var/lib/apt/periodic/update-success-stamp -mtime +9`"; then
+    sudo apt-get update --fix-missing
+  fi
+  sudo apt-get install -y "$@"
 }
+
+brew_install() {
+  which brew > /dev/null ||
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  HOMEBREW_NO_AUTO_UPDATE=1 brew install "$@"
+}
+
+brew_cask_install() {
+  which brew > /dev/null ||
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  HOMEBREW_NO_AUTO_UPDATE=1 brew cask install "$@"
+}
+
 
 main
 
