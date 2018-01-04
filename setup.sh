@@ -18,6 +18,15 @@ main() {
   setup_screen
   which wget >/dev/null || install_pkg wget
 
+  # deploy components
+  if [ "$os" = "Linux" ]; then
+    which docker >/dev/null || install_docker
+    which nginx  >/dev/null || {
+      install_nginx
+      [ -z "$production" ] && setup_nginx_server
+    }
+  fi
+
   if [ "$production" = true ]; then
     setup_vim_production
   else
@@ -26,13 +35,6 @@ main() {
     install_xiaomei
     setup_vim_development
     setup_virtualbox
-  fi
-
-  # required core components
-  which docker >/dev/null  || install_docker
-  if ! which nginx  >/dev/null; then
-    install_nginx
-    [ -z "$production" ] && setup_nginx_server
   fi
 }
 
@@ -91,15 +93,20 @@ install_xiaomei() {
   go install github.com/lovego/xiaomei/xiaomei
 
   # pull bases images
-  docker pull hub.c.163.com/lovego/xiaomei/appserver
-  docker pull hub.c.163.com/lovego/xiaomei/tasks
-  docker pull hub.c.163.com/lovego/xiaomei/nginx
-  docker pull hub.c.163.com/lovego/xiaomei/logc
-  docker pull hub.c.163.com/lovego/xiaomei/godoc
+  if [ $os = "Linux"]; then
+    docker pull hub.c.163.com/lovego/xiaomei/appserver
+    docker pull hub.c.163.com/lovego/xiaomei/tasks
+    docker pull hub.c.163.com/lovego/xiaomei/nginx
+    docker pull hub.c.163.com/lovego/xiaomei/logc
+    docker pull hub.c.163.com/lovego/xiaomei/godoc
+
+    ~/go/bin/xiaomei workspace-godoc
+    ~/go/bin/xiaomei workspace-godoc access -s
+  # else
+    # godoc
+  fi
 
   ~/go/bin/xiaomei auto-complete
-  ~/go/bin/xiaomei workspace-godoc
-  ~/go/bin/xiaomei workspace-godoc access -s
 }
 
 setup_vim_development() {
@@ -152,7 +159,7 @@ setup_vbox_share_folder() {
   # 自定义挂载
   if ! fgrep /mnt/share /etc/fstab > /dev/null; then
     sudo mkdir /mnt/share && sudo chown $(id -nu) /mnt/share
-    echo 'D_DRIVE /mnt/share vboxsf rw,gid=1000,uid=1000,dmode=755,fmode=644,auto,_netdev 0 0' |
+    echo 'share /mnt/share vboxsf rw,gid=1000,uid=1000,dmode=755,fmode=644,auto,_netdev 0 0' |
       sudo tee --append /etc/fstab > /dev/null
   fi
 }
@@ -160,7 +167,7 @@ setup_vbox_share_folder() {
 install_docker() {
   if [ $os = Darwin ]; then
     brew_cask_install docker
-    launchctl submit -l docker -- /Applications/Docker.app/Contents/MacOS/Docker
+    # launchctl submit -l docker -- /Applications/Docker.app/Contents/MacOS/Docker
     # wget https://download.docker.com/mac/stable/Docker.dmg
     # sudo hdiutil attach Docker.dmg
     # sudo installer -package /Volumes/Docker/Docker.pkg -target /
@@ -194,6 +201,8 @@ setup_nginx_server() {
 }"
   if [ $os = Darwin ]; then
     echo "$conf" | sudo tee /usr/local/etc/nginx/servers/default > /dev/null
+    sudo launchctl stop  homebrew.mxcl.nginx
+    sudo launchctl start homebrew.mxcl.nginx
   else
     echo "$conf" | sudo tee /etc/nginx/sites-available/default > /dev/null
     sudo service nginx reload
