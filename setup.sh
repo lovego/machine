@@ -107,8 +107,11 @@ install_xiaomei() {
 
     ~/go/bin/xiaomei workspace-godoc
     ~/go/bin/xiaomei workspace-godoc access -s
-  # else
-    # godoc
+  else
+    wget -O ~/Library/LaunchAgents/godoc.plist https://raw.githubusercontent.com/lovego/machine/master/godoc.plist
+    chmod 644 ~/Library/LaunchAgents/godoc.plist
+    sed -i "s/%gopath%/$HOME\/go/" ~/Library/LaunchAgents/godoc.plist
+    launchctl load -w ~/Library/LaunchAgents/godoc.plist
   fi
 
   ~/go/bin/xiaomei auto-complete
