@@ -7,8 +7,8 @@ os=$(uname)
 main() {
   while [ $# -gt 0 ]; do
     case "$1" in
-      --production  ) local production=true; shift ;;
-      *             ) echo unknow option: "$1"; exit 1 ;;
+      --production ) local production=true; shift ;;
+      *            ) echo unknow option: "$1"; exit 1 ;;
     esac
   done
 
@@ -50,9 +50,17 @@ setup_profile() {
     source ~/.profile
   fi
 
-  if [[ "$os" = Darwin && (-z $CLICOLOR || -z $LSCOLORS) ]]; then
-    echo "export CLICOLOR=1 LSCOLORS=GxFxCxDxBxegedabagaced" >> ~/.profile
-    source ~/.profile
+  if [ "$os" = Darwin ]; then
+    if [ -z $CLICOLOR -o -z $LSCOLORS ]; then
+      echo "export CLICOLOR=1 LSCOLORS=GxFxCxDxBxegedabagaced" >> ~/.profile
+      source ~/.profile
+    fi
+    alias ll >/dev/null || echo 'alias ll="ls -l"' >> ~/.profile
+    alias la >/dev/null || echo 'alias la="ls -a"' >> ~/.profile
+    alias la >/dev/null || echo 'alias la="ls -a"' >> ~/.profile
+    alias grep  >/dev/null || echo 'alias grep="grep --color"'   >> ~/.profile
+    alias fgrep >/dev/null || echo 'alias fgrep="fgrep --color"' >> ~/.profile
+    alias egrep >/dev/null || echo 'alias egrep="egrep --color"' >> ~/.profile
   fi
 }
 
