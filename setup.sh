@@ -55,12 +55,9 @@ setup_profile() {
       echo "export CLICOLOR=1 LSCOLORS=GxFxCxDxBxegedabagaced" >> ~/.profile
       source ~/.profile
     fi
-    alias ll >/dev/null || echo 'alias ll="ls -l"' >> ~/.profile
-    alias la >/dev/null || echo 'alias la="ls -a"' >> ~/.profile
-    alias la >/dev/null || echo 'alias la="ls -a"' >> ~/.profile
-    alias grep  >/dev/null || echo 'alias grep="grep --color"'   >> ~/.profile
-    alias fgrep >/dev/null || echo 'alias fgrep="fgrep --color"' >> ~/.profile
-    alias egrep >/dev/null || echo 'alias egrep="egrep --color"' >> ~/.profile
+    alias ll la >/dev/null || echo 'alias ll="ls -l" la="ls -a"' >> ~/.profile
+    alias grep fgrep egrep >/dev/null ||
+      echo 'alias grep="grep --color" fgrep="fgrep --color" egrep="egrep --color"' >> ~/.profile
   fi
 }
 
