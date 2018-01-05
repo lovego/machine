@@ -93,9 +93,9 @@ install_golang() {
 }
 
 install_xiaomei() {
-  test -e ~/go/bin/xiaomei >/dev/null && return
-  go get -d -v github.com/lovego/xiaomei/...
-  go install github.com/lovego/xiaomei/xiaomei
+  # test -e ~/go/bin/xiaomei >/dev/null && return
+  # go get -d -v github.com/lovego/xiaomei/...
+  # go install github.com/lovego/xiaomei/xiaomei
 
   # pull bases images
   if [ $os = "Linux"]; then
@@ -110,7 +110,7 @@ install_xiaomei() {
   else
     wget -O ~/Library/LaunchAgents/godoc.plist https://raw.githubusercontent.com/lovego/machine/master/godoc.plist
     chmod 644 ~/Library/LaunchAgents/godoc.plist
-    sed -i "s/%gopath%/$HOME\/go/" ~/Library/LaunchAgents/godoc.plist
+    sed -ie "s#%gopath%#$HOME/go#" ~/Library/LaunchAgents/godoc.plist
     launchctl load -w ~/Library/LaunchAgents/godoc.plist
   fi
 
@@ -141,11 +141,11 @@ setup_vbox_hostonly_network() {
   file=/etc/network/interfaces.d/host-only
   test -f $file && return
   echo '
-  auto enp0s8
-  iface enp0s8 inet static
-  address 192.168.56.15
-  netmask 255.255.255.0
-  ' | sudo tee $file > /dev/null
+auto enp0s8
+iface enp0s8 inet static
+address 192.168.56.15
+netmask 255.255.255.0
+' | sudo tee $file > /dev/null
   sudo ifdown enp0s8
   sudo ifup enp0s8
 }

@@ -10,16 +10,14 @@
     <false/>
     <key>ProgramArguments</key>
     <array>
-      <string>/usr/local/bin/go</string>
-      <string>-http=7000</string>
-      <string>-index_interval=-1s</string>
+      <string>/usr/local/bin/godoc</string>
+      <string>-http=:7000</string>
+      <string>-index_interval=1s</string>
     </array>
     <key>EnvironmentVariables</key>
     <dict>
       <key>GOPATH</key>
       <string>%gopath%</string>
     </dict>
-    <key>WorkingDirectory</key>
-    <string>/usr/local</string>
   </dict>
 </plist>
