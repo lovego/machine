@@ -93,9 +93,9 @@ install_golang() {
 }
 
 install_xiaomei() {
-  # test -e ~/go/bin/xiaomei >/dev/null && return
-  # go get -d -v github.com/lovego/xiaomei/...
-  # go install github.com/lovego/xiaomei/xiaomei
+  test -e ~/go/bin/xiaomei >/dev/null && return
+  go get -d -v github.com/lovego/xiaomei/...
+  go install github.com/lovego/xiaomei/xiaomei
 
   # pull bases images
   if [ $os = "Linux"]; then
@@ -111,7 +111,7 @@ install_xiaomei() {
     wget -O ~/Library/LaunchAgents/godoc.plist https://raw.githubusercontent.com/lovego/machine/master/godoc.plist
     chmod 644 ~/Library/LaunchAgents/godoc.plist
     sed -ie "s#%gopath%#$HOME/go#" ~/Library/LaunchAgents/godoc.plist
-    launchctl load -w ~/Library/LaunchAgents/godoc.plist
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/godoc.plist
   fi
 
   ~/go/bin/xiaomei auto-complete
