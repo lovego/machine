@@ -5,8 +5,8 @@
 ## 环境安装脚本
 该脚本适用于Ubuntu、macOS，包含内容：
 1. 首先，为了让生活更美好，对sudo、profile、screen进行了配置。
-2. 如果是生产环境简单设置vim；如果是开发环境，则安装git、go、xiaomei，设置vim开发环境。
-3. 安装Docker、Nginx这两个必需组件。
+2. 如果是linux系统，安装Docker、Nginx这两个必需组件。
+3. 如果是生产环境简单设置vim；如果是开发环境，则安装git、go、xiaomei，设置vim开发环境。
 
 使用方式：
 ```
