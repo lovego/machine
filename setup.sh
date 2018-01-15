@@ -110,7 +110,7 @@ install_xiaomei() {
   else
     wget -O ~/Library/LaunchAgents/godoc.plist https://raw.githubusercontent.com/lovego/machine/master/godoc.plist
     chmod 644 ~/Library/LaunchAgents/godoc.plist
-    sed -ie "s#%gopath%#$HOME/go#" ~/Library/LaunchAgents/godoc.plist
+    sed -i '' -e "s#%gopath%#$HOME/go#" ~/Library/LaunchAgents/godoc.plist
     launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/godoc.plist
   fi
 
