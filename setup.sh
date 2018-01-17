@@ -46,7 +46,7 @@ setup_sudo_no_password() {
 
 setup_profile() {
   if [ "$os" = Darwin -a ! -e ~/.profile  ]; then
-    echo "export PS1='\h:\w\$ '" >> ~/.profile
+    echo -e "shopt -s extglob\nexport PS1='\h:\w\$ '" >> ~/.profile
     source ~/.profile
   fi
   if [ -z $EDITOR -o -z $VISUAL ]; then
