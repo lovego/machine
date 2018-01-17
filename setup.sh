@@ -45,6 +45,10 @@ setup_sudo_no_password() {
 }
 
 setup_profile() {
+  if [ "$os" = Darwin -a ! -e ~/.profile  ]; then
+    echo "export PS1='\h:\w\$ '" >> ~/.profile
+    source ~/.profile
+  fi
   if [ -z $EDITOR -o -z $VISUAL ]; then
     echo "export EDITOR=vim VISUAL=vim" >> ~/.profile
     source ~/.profile
@@ -55,9 +59,14 @@ setup_profile() {
       echo "export CLICOLOR=1 LSCOLORS=GxFxCxDxBxegedabagaced" >> ~/.profile
       source ~/.profile
     fi
-    alias ll la >/dev/null || echo 'alias ll="ls -l" la="ls -a"' >> ~/.profile
-    alias grep fgrep egrep >/dev/null ||
+    if ! alias ll la >/dev/null; then
+      echo 'alias ll="ls -l" la="ls -a"' >> ~/.profile
+      source ~/.profile
+    fi
+    if ! alias grep fgrep egrep >/dev/null; then
       echo 'alias grep="grep --color" fgrep="fgrep --color" egrep="egrep --color"' >> ~/.profile
+      source ~/.profile
+    fi
   fi
 }
 
