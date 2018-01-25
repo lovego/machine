@@ -176,7 +176,7 @@ setup_vbox_share_folder() {
   # 自定义挂载
   if ! fgrep /mnt/share /etc/fstab > /dev/null; then
     sudo mkdir /mnt/share && sudo chown $(id -nu) /mnt/share
-    echo 'share /mnt/share vboxsf rw,gid=1000,uid=1000,dmode=755,fmode=644,auto,_netdev 0 0' |
+    echo 'share /mnt/share vboxsf rw,gid=1000,uid=1000,auto,_netdev 0 0 # dmode=755,fmode=644,' |
       sudo tee --append /etc/fstab > /dev/null
   fi
 }
