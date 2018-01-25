@@ -34,7 +34,7 @@ main() {
     install_golang
     install_xiaomei
     setup_vim_development
-    setup_virtualbox
+    [ "$os" = Linux ] && setup_virtualbox
   fi
 }
 
@@ -139,7 +139,7 @@ setup_vim_development() {
 
 setup_virtualbox() {
   # 通过检测vboxsf内核模块，判断是否是VirtualBox虚拟机
-  if [ "$os" = Linux ] && modinfo vboxsf >/dev/null 2>&1; then
+  if modinfo vboxsf >/dev/null 2>&1; then
     setup_vbox_hostonly_network
     setup_vbox_share_folder
   fi
