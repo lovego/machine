@@ -107,7 +107,7 @@ install_xiaomei() {
   go install github.com/lovego/xiaomei/xiaomei
 
   # pull bases images
-  if [ $os = "Linux"]; then
+  if [ $os = "Linux" ]; then
     docker pull hub.c.163.com/lovego/xiaomei/appserver
     docker pull hub.c.163.com/lovego/xiaomei/tasks
     docker pull hub.c.163.com/lovego/xiaomei/nginx
@@ -117,6 +117,7 @@ install_xiaomei() {
     ~/go/bin/xiaomei workspace-godoc
     ~/go/bin/xiaomei workspace-godoc access -s
   else
+    mkdir -p ~/Library/LaunchAgents
     wget -O ~/Library/LaunchAgents/godoc.plist https://raw.githubusercontent.com/lovego/machine/master/godoc.plist
     chmod 644 ~/Library/LaunchAgents/godoc.plist
     sed -i '' -e "s#%gopath%#$HOME/go#" ~/Library/LaunchAgents/godoc.plist
