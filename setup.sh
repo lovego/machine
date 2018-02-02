@@ -238,7 +238,7 @@ install_letsencrypt() {
   else
     yum_install certbot
   fi
-  sudo mkdir /var/www/letsencrypt
+  echo '6  6  *  *  * root certbot renew -q --deploy-hook "systemctl reload nginx || reload-nginx"' | sudo tee /etc/cron.d/letsencrypt > /dev/null
 }
 
 setup_nginx_server() {
