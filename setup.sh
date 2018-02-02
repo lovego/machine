@@ -2,9 +2,6 @@
 
 set -ex
 
-os=$(uname)
-which apt-get >/dev/null 2>&1 && apt_get=true || apt_get=false
-
 main() {
   local production=false
   while [ $# -gt 0 ]; do
@@ -13,6 +10,9 @@ main() {
       *            ) echo unknow option: "$1"; exit 1 ;;
     esac
   done
+
+  os=$(uname)
+  get_profile
 
   # first of all, make life better.
   setup_sudo_no_password
@@ -48,23 +48,33 @@ setup_sudo_no_password() {
 
 setup_profile() {
   if [ "$os" = Darwin ]; then
-    test -e ~/.profile || echo -e "shopt -s extglob\nexport PS1='\h:\w\$ '" >> ~/.profile
+    test -e $profile || echo -e "shopt -s extglob\nexport PS1='\h:\w\$ '" >> $profile
 
     if [ -z $CLICOLOR -o -z $LSCOLORS ]; then
-      echo "export CLICOLOR=1 LSCOLORS=GxFxCxDxBxegedabagaced" >> ~/.profile
+      echo "export CLICOLOR=1 LSCOLORS=GxFxCxDxBxegedabagaced" >> $profile
     fi
 
-    source ~/.profile # make alias work
+    source $profile # make alias work
     if ! alias ll la >/dev/null; then
-      echo 'alias ll="ls -l" la="ls -a"' >> ~/.profile
+      echo 'alias ll="ls -l" la="ls -a"' >> $profile
     fi
     if ! alias grep fgrep egrep >/dev/null; then
-      echo 'alias grep="grep --color" fgrep="fgrep --color" egrep="egrep --color"' >> ~/.profile
+      echo 'alias grep="grep --color" fgrep="fgrep --color" egrep="egrep --color"' >> $profile
     fi
   fi
 
   if [ -z $EDITOR -o -z $VISUAL ]; then
-    echo "export EDITOR=vim VISUAL=vim" >> ~/.profile
+    echo "export EDITOR=vim VISUAL=vim" >> $profile
+  fi
+}
+
+get_profile() {
+  if test -e ~/.bash_profile; then
+    profile=~/.bash_profile
+  elif test -e  ~/.bash_login; then
+    profile=~/.bash_login
+  else
+    profile=~/.profile
   fi
 }
 
@@ -87,13 +97,13 @@ install_golang() {
   which go >/dev/null && return
   if [ "$os" = Darwin ]; then
     brew_install go
-    echo 'export PATH=$PATH:$HOME/go/bin GOPATH=$HOME/go' >> ~/.profile
+    echo 'export PATH=$PATH:$HOME/go/bin GOPATH=$HOME/go' >> $profile
   else
     wget -T 10 -cO /tmp/go.tar.gz https://dl.google.com/go/go1.9.3.linux-amd64.tar.gz
     sudo tar -C /usr/local -zxf /tmp/go.tar.gz
-    echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin GOPATH=$HOME/go' >> ~/.profile
+    echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin GOPATH=$HOME/go' >> $profile
   fi
-  source ~/.profile
+  source $profile
 }
 
 install_xiaomei() {
@@ -186,7 +196,7 @@ install_docker() {
     # sudo hdiutil attach Docker.dmg
     # sudo installer -package /Volumes/Docker/Docker.pkg -target /
     # sudo hdiutil detach /Volumes/Docker
-  elif $apt_get; then
+  elif which apt-get >/dev/null 2>&1; then
     sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     sudo apt-key fingerprint 0EBFCD88 # Verify fingerprint
@@ -199,7 +209,7 @@ install_docker() {
   else
     sudo yum install -y yum-utils device-mapper-persistent-data lvm2
     sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-    sudo yum install docker-ce
+    sudo yum install -y docker-ce
   fi
 }
 
@@ -207,7 +217,7 @@ install_nginx() {
   if [ $os = Darwin ]; then
     brew_install nginx
     sudo brew services start nginx
-  elif $apt_get; then
+  elif which apt-get >/dev/null 2>&1; then
     apt_install nginx-core
   else
     yum_install nginx
@@ -260,7 +270,7 @@ install_haproxy_from_source() {
 install_pkg() {
   if [ "$os" = Darwin ]; then
     brew_install "$@"
-  elif $apt_get; then
+  elif which apt-get >/dev/null 2>&1; then
     apt_install "$@"
   else
     yum_install "$@"
