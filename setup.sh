@@ -205,11 +205,14 @@ install_docker() {
 
     sudo apt-get update
     sudo apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual docker-ce
+    sudo systemctl --now enable docker
     sudo usermod -aG docker $(id -nu)
   else
     sudo yum install -y yum-utils device-mapper-persistent-data lvm2
     sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
     sudo yum install -y docker-ce
+    sudo systemctl --now enable docker
+    sudo usermod -aG docker $(id -nu)
   fi
 }
 
@@ -300,7 +303,6 @@ brew_cask_install() {
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   HOMEBREW_NO_AUTO_UPDATE=1 brew cask install "$@"
 }
-
 
 main
 
