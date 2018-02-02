@@ -53,14 +53,14 @@ setup_profile() {
     if [ -z $CLICOLOR -o -z $LSCOLORS ]; then
       echo "export CLICOLOR=1 LSCOLORS=GxFxCxDxBxegedabagaced" >> $profile
     fi
+  fi
 
-    source $profile # make alias work
-    if ! alias ll la >/dev/null; then
-      echo 'alias ll="ls -l" la="ls -a"' >> $profile
-    fi
-    if ! alias grep fgrep egrep >/dev/null; then
-      echo 'alias grep="grep --color" fgrep="fgrep --color" egrep="egrep --color"' >> $profile
-    fi
+  source $profile # make alias work
+  if ! alias ll la >/dev/null; then
+    echo 'alias ll="ls -l" la="ls -a"' >> $profile
+  fi
+  if ! alias grep fgrep egrep >/dev/null; then
+    echo 'alias grep="grep --color" fgrep="fgrep --color" egrep="egrep --color"' >> $profile
   fi
 
   if [ -z $EDITOR -o -z $VISUAL ]; then
