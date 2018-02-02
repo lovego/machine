@@ -27,6 +27,7 @@ main() {
       install_nginx
       $production || setup_nginx_server
     }
+    install_letsencrypt
   fi
 
   if $production; then
@@ -227,6 +228,19 @@ install_nginx() {
   fi
 }
 
+install_letsencrypt() {
+  which certbot >/dev/null 2>&1 && return
+  if which apt-get >/dev/null 2>&1; then
+    sudo apt-get install -y software-properties-common
+    sudo add-apt-repository ppa:certbot/certbot
+    sudo apt-get update
+    sudo apt-get install -y certbot
+  else
+    yum_install certbot
+  fi
+  sudo mkdir /var/www/letsencrypt
+}
+
 setup_nginx_server() {
   conf="server {
   listen 80 default_server;
@@ -244,11 +258,11 @@ setup_nginx_server() {
 }
 
 install_haproxy() {
-  sudo apt-get install software-properties-common
+  sudo apt-get install -y software-properties-common
   sudo add-apt-repository ppa:vbernat/haproxy-1.8
 
   sudo apt-get update
-  sudo apt-get install haproxy
+  sudo apt-get install -y haproxy
 }
 
 install_haproxy_from_source() {
@@ -289,7 +303,7 @@ apt_install() {
 }
 
 yum_install() {
-  yum install -y "$@"
+  sudo yum install -y "$@"
 }
 
 brew_install() {
