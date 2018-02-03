@@ -20,7 +20,7 @@ curl -s https://raw.githubusercontent.com/lovego/machine/master/setup.sh | bash 
 ## 数据库安装脚本
 该脚本适用于Ubuntu、macOS。使用方式：
 ```
-curl -s https://raw.githubusercontent.com/lovego/machine/master/setup_db.sh | bash -s [-- options...]
+curl -s https://raw.githubusercontent.com/lovego/machine/master/databases.sh | bash -s [-- options...]
 ```
 选项列表：
 1. --redis-server，表示需要安装redis服务器

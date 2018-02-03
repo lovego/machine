@@ -32,7 +32,6 @@ main() {
   # developing environment
   if $production; then
     setup_vim_production
-    install_letsencrypt
   else
     which git >/dev/null || install_pkg git
     install_golang
@@ -229,34 +228,6 @@ install_nginx() {
   fi
 }
 
-install_letsencrypt() {
-  if ! certbot >/dev/null 2>&1; then
-    if which apt-get >/dev/null 2>&1; then
-      sudo apt-get install -y software-properties-common
-      sudo add-apt-repository -y ppa:certbot/certbot
-      sudo apt-get update
-      sudo apt-get install -y certbot
-    else
-      yum_install certbot
-    fi
-  fi
-  if ! test -x /bin/letsencrypt-renew; then
-    echo "
-    #!/bin/sh
-    certbot renew --deploy-hook '
-    if test -f /lib/systemd/system/nginx.service; then
-      sudo systemctl reload nginx
-    elif test -x /etc/init.d/nginx; then
-      sudo service nginx reload
-    else
-      sudo reload-nginx
-    fi
-    '" | sudo tee /bin/letsencrypt-renew >/dev/null
-    sudo chmod +x /bin/letsencrypt-renew
-    echo '6  6  *  *  *  root  letsencrypt-renew' | sudo tee /etc/cron.d/letsencrypt-renew >/dev/null
-  fi
-}
-
 setup_nginx_server() {
   conf="server {
   listen 80 default_server;
@@ -269,13 +240,17 @@ setup_nginx_server() {
     sudo launchctl start homebrew.mxcl.nginx
   else
     echo "$conf" | sudo tee /etc/nginx/sites-available/default > /dev/null
-    if test -f /lib/systemd/system/nginx.service; then
-      sudo systemctl reload nginx
-    elif test -x /etc/init.d/nginx; then
-      sudo service nginx reload
-    else
-      sudo reload-nginx
-    fi
+    reload_nginx
+  fi
+}
+
+reload_nginx() {
+  if test -f /lib/systemd/system/nginx.service; then
+    sudo systemctl reload nginx
+  elif test -x /etc/init.d/nginx; then
+    sudo service nginx reload
+  else
+    sudo reload-nginx
   fi
 }
 

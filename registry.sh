@@ -1,27 +1,27 @@
 #!/bin/bash
 
 if [ $# != 1 ]; then
-  echo "usage: $0 <domain-name>
-example:  $0 registry.abc.com"
+  echo "  usage: $0 <domain-name>
+example: $0 registry.abc.com"
   exit 1
 fi
 set -ex
 domain=$1
 
 main() {
-  checkCertificate
-  setupNginx
+  check_certificate
+  setup_nginx
   docker run -d -p 5000:5000 --restart=always --name registry registry:2
 }
 
-checkCertificate() {
+check_certificate() {
   sudo test -e /etc/letsencrypt/live/$domain && return
-  setupNginx checkCertificate
+  setup_nginx checkCertificate
   sudo mkdir -p /var/www/letsencrypt
   sudo certbot certonly --webroot -w /var/www/letsencrypt -d $domain
 }
 
-setupNginx() {
+setup_nginx() {
   if [ "$1" = checkCertificate ]; then
     local ssl=''
   else
@@ -62,10 +62,10 @@ $ssl
 }
 " | sudo tee /etc/nginx/sites-enabled/$domain >/dev/null
   sudo mkdir -p /var/log/nginx/$domain
-  reloadNginx
+  reload_nginx
 }
 
-reloadNginx() {
+reload_nginx() {
   if test -f /lib/systemd/system/nginx.service; then
     sudo systemctl reload nginx
   elif test -x /etc/init.d/nginx; then
