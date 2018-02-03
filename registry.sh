@@ -25,7 +25,7 @@ setup_nginx() {
   if [ "$1" = checkCertificate ]; then
     local ssl=''
   else
-    local ssl='
+    local ssl="
   listen              443 ssl http2;
   ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
   ssl_ciphers         AES128-SHA:AES256-SHA:RC4-SHA:DES-CBC3-SHA:RC4-MD5;
@@ -33,11 +33,11 @@ setup_nginx() {
   ssl_certificate_key /etc/letsencrypt/live/$domain/privkey.pem;
   ssl_session_cache   shared:SSL:10m;
   ssl_session_timeout 10m;
-'
+"
   fi
 
-  echo "
-server {
+  echo \
+"server {
   listen 80;
   server_name $domain;
 $ssl
@@ -59,8 +59,7 @@ $ssl
   location /.well-known {
     root /var/www/letsencrypt;
   }
-}
-" | sudo tee /etc/nginx/sites-enabled/$domain >/dev/null
+}" | sudo tee /etc/nginx/sites-enabled/$domain >/dev/null
   sudo mkdir -p /var/log/nginx/$domain
   reload_nginx
 }
