@@ -18,12 +18,12 @@ checkCertificate() {
   sudo test -e /etc/letsencrypt/live/$domain && return
   setupNginx checkCertificate
   sudo mkdir -p /var/www/letsencrypt
-  sudo certbot certonly --webroot -w /var/www/letsencrypt -d {{ .Domain }}
+  sudo certbot certonly --webroot -w /var/www/letsencrypt -d $domain
 }
 
 setupNginx() {
   if [ "$1" = checkCertificate ]; then
-    local ssl=""
+    local ssl=''
   else
     local ssl='
   listen              443 ssl http2;
@@ -46,7 +46,7 @@ $ssl
   }
 
   proxy_http_version 1.1;
-  proxy_set_header Connection "";
+  proxy_set_header Connection \"\";
   proxy_set_header Host \$http_host;
   proxy_set_header X-Real-IP \$remote_addr;
   proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -61,8 +61,18 @@ $ssl
   }
 }
 " | sudo tee /etc/nginx/sites-enabled/$domain >/dev/null
-  sudo mkdir -p /var/log/nginx/{{ .Domain }}
-  sudo systemctl reload nginx || sudo reload-nginx || sudo service nginx reload
+  sudo mkdir -p /var/log/nginx/$domain
+  reloadNginx
+}
+
+reloadNginx() {
+  if test -f /lib/systemd/system/nginx.service; then
+    sudo systemctl reload nginx
+  elif test -x /etc/init.d/nginx; then
+    sudo service nginx reload
+  else
+    sudo reload-nginx
+  fi
 }
 
 main

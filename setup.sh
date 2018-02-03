@@ -1,8 +1,6 @@
 #!/bin/bash
 
 set -ex
-os=$(uname)
-get_profile
 
 main() {
   local production=false
@@ -12,6 +10,9 @@ main() {
       *            ) echo unknow option: "$1"; exit 1 ;;
     esac
   done
+
+  os=$(uname)
+  get_profile
 
   # first of all, make life better.
   setup_sudo_no_password
@@ -26,12 +27,12 @@ main() {
       install_nginx
       $production || setup_nginx_server
     }
-    install_letsencrypt
   fi
 
   # developing environment
   if $production; then
     setup_vim_production
+    install_letsencrypt
   else
     which git >/dev/null || install_pkg git
     install_golang
@@ -201,7 +202,7 @@ install_docker() {
     sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     sudo apt-key fingerprint 0EBFCD88 # Verify fingerprint
-    sudo add-apt-repository \
+    sudo add-apt-repository -y \
       "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
     sudo apt-get update
@@ -229,16 +230,31 @@ install_nginx() {
 }
 
 install_letsencrypt() {
-  which certbot >/dev/null 2>&1 && return
-  if which apt-get >/dev/null 2>&1; then
-    sudo apt-get install -y software-properties-common
-    sudo add-apt-repository ppa:certbot/certbot
-    sudo apt-get update
-    sudo apt-get install -y certbot
-  else
-    yum_install certbot
+  if ! certbot >/dev/null 2>&1; then
+    if which apt-get >/dev/null 2>&1; then
+      sudo apt-get install -y software-properties-common
+      sudo add-apt-repository -y ppa:certbot/certbot
+      sudo apt-get update
+      sudo apt-get install -y certbot
+    else
+      yum_install certbot
+    fi
   fi
-  echo '6  6  *  *  * root certbot renew -q --deploy-hook "systemctl reload nginx || reload-nginx"' | sudo tee /etc/cron.d/letsencrypt > /dev/null
+  if ! test -x /bin/letsencrypt-renew; then
+    echo "
+    #!/bin/sh
+    certbot renew --deploy-hook '
+    if test -f /lib/systemd/system/nginx.service; then
+      sudo systemctl reload nginx
+    elif test -x /etc/init.d/nginx; then
+      sudo service nginx reload
+    else
+      sudo reload-nginx
+    fi
+    '" | sudo tee /bin/letsencrypt-renew >/dev/null
+    sudo chmod +x /bin/letsencrypt-renew
+    echo '6  6  *  *  *  root  letsencrypt-renew' | sudo tee /etc/cron.d/letsencrypt-renew >/dev/null
+  fi
 }
 
 setup_nginx_server() {
@@ -253,13 +269,19 @@ setup_nginx_server() {
     sudo launchctl start homebrew.mxcl.nginx
   else
     echo "$conf" | sudo tee /etc/nginx/sites-available/default > /dev/null
-    sudo service nginx reload
+    if test -f /lib/systemd/system/nginx.service; then
+      sudo systemctl reload nginx
+    elif test -x /etc/init.d/nginx; then
+      sudo service nginx reload
+    else
+      sudo reload-nginx
+    fi
   fi
 }
 
 install_haproxy() {
   sudo apt-get install -y software-properties-common
-  sudo add-apt-repository ppa:vbernat/haproxy-1.8
+  sudo add-apt-repository -y ppa:vbernat/haproxy-1.8
 
   sudo apt-get update
   sudo apt-get install -y haproxy
