@@ -33,7 +33,7 @@ main() {
   if $production; then
     setup_vim_production
   else
-    which git >/dev/null || install_pkg git
+    install_git
     install_golang
     install_xiaomei
     setup_vim_development
@@ -92,6 +92,12 @@ setup_screen() {
 setup_vim_production() {
   test -f ~/.vimrc ||
     wget -O ~/.vimrc https://raw.githubusercontent.com/lovego/machine/master/vimrc_production
+}
+
+install_git() {
+  which git >/dev/null || return
+  install_pkg git
+  sudo git config --system color.ui true # for git < 1.8.4
 }
 
 install_golang() {
