@@ -11,8 +11,7 @@ domain=$1
 main() {
   check_certificate
   setup_nginx
-  docker run --name registry -d --restart=always \
-    -e REGISTRY_HTTP_ADDR=127.0.0.1:5000 -p 5000:5000 registry:2
+  docker run --name registry -p 127.0.0.1:5000:5000 -d --restart=always registry:2
 }
 
 check_certificate() {
