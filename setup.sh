@@ -1,6 +1,8 @@
 #!/bin/bash
 
 set -ex
+os=$(uname)
+get_profile
 
 main() {
   local production=false
@@ -10,9 +12,6 @@ main() {
       *            ) echo unknow option: "$1"; exit 1 ;;
     esac
   done
-
-  os=$(uname)
-  get_profile
 
   # first of all, make life better.
   setup_sudo_no_password
@@ -30,6 +29,7 @@ main() {
     install_letsencrypt
   fi
 
+  # developing environment
   if $production; then
     setup_vim_production
   else
@@ -318,5 +318,5 @@ brew_cask_install() {
   HOMEBREW_NO_AUTO_UPDATE=1 brew cask install "$@"
 }
 
-main
+main "$@"
 
