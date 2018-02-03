@@ -11,7 +11,8 @@ domain=$1
 main() {
   check_certificate
   setup_nginx
-  docker run -d -p 5000:5000 --restart=always --name registry registry:2
+  docker run --name registry -d --restart=always \
+    -e REGISTRY_HTTP_ADDR=127.0.0.1:5000 -p 5000:5000 registry:2
 }
 
 check_certificate() {
@@ -23,7 +24,7 @@ check_certificate() {
 
 setup_nginx() {
   if [ "$1" = checkCertificate ]; then
-    local ssl=''
+    local ssl=""
   else
     local ssl="
   listen              443 ssl http2;
@@ -36,30 +37,54 @@ setup_nginx() {
 "
   fi
 
-  echo \
-"server {
+  echo '## Set a variable to help us decide if we need to add the
+## "Docker-Distribution-Api-Version" header.
+## The registry always sets this header.
+## In the case of nginx performing auth, the header is unset
+## since nginx is auth-ing before proxying.
+map $upstream_http_docker_distribution_api_version $docker_distribution_api_version {
+  "" "registry/2.0";
+}
+'"
+server {
   listen 80;
   server_name $domain;
 $ssl
-  location / {
-    proxy_pass http://127.0.0.1:5000;
-  }
-
-  proxy_http_version 1.1;
-  proxy_set_header Connection \"\";
-  proxy_set_header Host \$http_host;
-  proxy_set_header X-Real-IP \$remote_addr;
-  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-  proxy_set_header X-Forwarded-Proto \$scheme;
-  proxy_connect_timeout 3s;
-
   access_log /var/log/nginx/$domain/access.log;
   error_log  /var/log/nginx/$domain/access.err;
+"'
+  # disable any limits to avoid HTTP 413 for large image uploads
+  client_max_body_size 0;
+  # required to avoid HTTP 411: see Issue #1486 (https://github.com/moby/moby/issues/1486)
+  chunked_transfer_encoding on;
+
+  location /v2/ {
+    # Do not allow connections from docker 1.5 and earlier
+    # docker pre-1.6.0 did not properly set the user agent on ping, catch "Go *" user agents
+    if ($http_user_agent ~ "^(docker\/1\.(3|4|5(?!\.[0-9]-dev))|Go ).*$" ) {
+      return 404;
+    }
+
+    # To add basic authentication to v2 use auth_basic setting.
+    # auth_basic "Registry realm";
+    # auth_basic_user_file /etc/nginx/conf.d/nginx.htpasswd;
+
+    ## If $docker_distribution_api_version is empty, the header is not added.
+    ## See the map directive above where this variable is defined.
+    add_header "Docker-Distribution-Api-Version" $docker_distribution_api_version always;
+
+    proxy_pass                          http://127.0.0.1:5000;
+    proxy_set_header  Host              $http_host;   # required for docker client sake
+    proxy_set_header  X-Real-IP         $remote_addr; # pass on real client IP
+    proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header  X-Forwarded-Proto $scheme;
+    proxy_read_timeout                  900;
+  }
 
   location /.well-known {
     root /var/www/letsencrypt;
   }
-}" | sudo tee /etc/nginx/sites-enabled/$domain >/dev/null
+}' | sudo tee /etc/nginx/sites-enabled/$domain >/dev/null
   sudo mkdir -p /var/log/nginx/$domain
   reload_nginx
 }
