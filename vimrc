@@ -33,7 +33,7 @@ set number ruler hlsearch expandtab shiftwidth=2 tabstop=2 backspace=2
 set fencs=utf8,gbk
 colo desert
 autocmd vimenter * NERDTree
-highlight ColorColumn ctermbg=gray
+highlight ColorColumn ctermbg=255
 set colorcolumn=80
 
 " Search for selected text, forwards or backwards.
