@@ -34,7 +34,7 @@ set fencs=utf8,gbk
 colo desert
 autocmd vimenter * NERDTree
 highlight ColorColumn ctermbg=255
-set colorcolumn=80
+set colorcolumn=81
 
 " Search for selected text, forwards or backwards.
 vnoremap <silent> * :<C-U>
