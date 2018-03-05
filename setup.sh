@@ -211,13 +211,13 @@ install_docker() {
       "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
     sudo apt-get update
-    sudo apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual docker-ce
+    sudo apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual docker-ce=17.12.1
     sudo systemctl --now enable docker
     sudo usermod -aG docker $(id -nu)
   else
     sudo yum install -y yum-utils device-mapper-persistent-data lvm2
     sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-    sudo yum install -y docker-ce
+    sudo yum install -y docker-ce-17.12.1.ce
     sudo systemctl --now enable docker
     sudo usermod -aG docker $(id -nu)
   fi
