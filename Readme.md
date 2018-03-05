@@ -63,7 +63,6 @@ sudo service networking restart
 例如，需要把 "192.168.202.12:5000" 设置为http镜像仓库，并且使用 "http://hub-mirror.c.163.com/" 进行镜像加速，执行如下命令：
 ```
 echo '{
-  "insecure-registries": [ "192.168.202.12:5000" ],
   "registry-mirrors": [ "http://hub-mirror.c.163.com/" ]
 }' | sudo tee /etc/docker/daemon.json > /dev/null
 sudo service docker restart
