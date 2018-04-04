@@ -27,7 +27,7 @@ server {
   $1
 "'
   location / {
-    proxy_pass                          http://127.0.0.1:5000;
+    proxy_pass                          http://127.0.0.1:4000;
     proxy_set_header  Host              $http_host;   # required for docker client sake
     proxy_set_header  X-Real-IP         $remote_addr; # pass on real client IP
     proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
