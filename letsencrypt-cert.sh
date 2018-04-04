@@ -38,7 +38,7 @@ server {
     root /var/www/letsencrypt;
   }
 ' | sudo tee /etc/nginx/sites-enabled/$domain >/dev/null
-  sudo mkdir /var/log/nginx/$domain
+  sudo mkdir -p /var/log/nginx/$domain
   sudo systemctl reload nginx
 }
 
