@@ -37,7 +37,7 @@ server {
   location /.well-known {
     root /var/www/letsencrypt;
   }
-' | sudo tee /etc/nginx/sites-enabled/$domain >/dev/null
+}' | sudo tee /etc/nginx/sites-enabled/$domain >/dev/null
   sudo mkdir -p /var/log/nginx/$domain
   sudo systemctl reload nginx
 }
