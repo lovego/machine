@@ -207,13 +207,13 @@ install_docker() {
 
     sudo apt-get update
     sudo apt-get install -y linux-image-extra-$(uname -r) linux-image-extra-virtual docker-ce=17.09.1
-    sudo systemctl --now enable docker
+    sudo systemctl enable --now docker
     sudo usermod -aG docker $(id -nu)
   else
     sudo yum install -y yum-utils device-mapper-persistent-data lvm2
     sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
     sudo yum install -y docker-ce-17.09.1.ce
-    sudo systemctl --now enable docker
+    sudo systemctl enable --now docker
     sudo usermod -aG docker $(id -nu)
   fi
 }
@@ -224,9 +224,11 @@ install_nginx() {
     sudo brew services start nginx
   elif which apt-get >/dev/null 2>&1; then
     apt_install nginx-core
+    sudo systemctl enable --now nginx
   else
     yum_install epel-release
     yum_install nginx
+    sudo systemctl enable --now nginx
   fi
 }
 
