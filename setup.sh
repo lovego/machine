@@ -225,6 +225,7 @@ install_nginx() {
   elif which apt-get >/dev/null 2>&1; then
     apt_install nginx-core
   else
+    yum_install epel-release
     yum_install nginx
   fi
 }
