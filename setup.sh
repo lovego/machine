@@ -198,11 +198,6 @@ install_docker() {
   which docker >/dev/null && return
   if [ $os = Darwin ]; then
     brew_cask_install docker
-    # launchctl submit -l docker -- /Applications/Docker.app/Contents/MacOS/Docker
-    # wget https://download.docker.com/mac/stable/Docker.dmg
-    # sudo hdiutil attach Docker.dmg
-    # sudo installer -package /Volumes/Docker/Docker.pkg -target /
-    # sudo hdiutil detach /Volumes/Docker
   elif which apt-get >/dev/null 2>&1; then
     sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -242,21 +237,10 @@ setup_nginx_server() {
 }"
   if [ $os = Darwin ]; then
     echo "$conf" | sudo tee /usr/local/etc/nginx/servers/default > /dev/null
-    sudo launchctl stop  homebrew.mxcl.nginx
-    sudo launchctl start homebrew.mxcl.nginx
+    sudo brew services restart nginx
   else
     echo "$conf" | sudo tee /etc/nginx/sites-available/default > /dev/null
-    reload_nginx
-  fi
-}
-
-reload_nginx() {
-  if test -f /lib/systemd/system/nginx.service; then
     sudo systemctl reload nginx
-  elif test -x /etc/init.d/nginx; then
-    sudo service nginx reload
-  else
-    sudo reload-nginx
   fi
 }
 

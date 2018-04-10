@@ -70,17 +70,7 @@ server {
   }
 }' | sudo tee /etc/nginx/sites-enabled/$domain >/dev/null
   sudo mkdir -p /var/log/nginx/$domain
-  reload_nginx
-}
-
-reload_nginx() {
-  if test -f /lib/systemd/system/nginx.service; then
-    sudo systemctl reload nginx
-  elif test -x /etc/init.d/nginx; then
-    sudo service nginx reload
-  else
-    sudo reload-nginx
-  fi
+  sudo systemctl reload nginx
 }
 
 main

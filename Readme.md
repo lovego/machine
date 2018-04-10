@@ -1,33 +1,47 @@
 # <a href="http://github.com/lovego/xiaomei">xiaomei</a>开发、生产环境安装
 
-
-
-## 环境安装脚本
-该脚本适用于Ubuntu、macOS，包含内容：
+## 基础环境安装脚本
+该脚本适用于Ubuntu、CentOS、macOS，包含内容：
 1. 首先，为了让生活更美好，对sudo、profile、screen进行了配置。
-2. 如果是linux系统，安装Docker、Nginx、LetsEncrypt这三个必需组件。
+2. 如果是linux系统，安装Docker、Nginx这两个必需组件。
 3. 如果是生产环境简单设置vim；如果是开发环境，则安装git、go、xiaomei，设置vim开发环境。
+
+开发环境使用方式：
+```
+curl -s https://raw.githubusercontent.com/lovego/machine/master/setup.sh | bash -s
+```
+
+生产环境使用方式：
+```
+curl -s https://raw.githubusercontent.com/lovego/machine/master/setup.sh | bash -s -- --production
+```
+
+## LetsEncrypt安装脚本
+该脚本适用于Ubuntu、CentOS。
 
 使用方式：
 ```
-curl -s https://raw.githubusercontent.com/lovego/machine/master/setup.sh | bash -s [-- options...]
+curl -s https://raw.githubusercontent.com/lovego/machine/master/letsencrypt.sh | bash -s -- admin@abc.com
 ```
-选项列表：
-1. --production，表示仅安装生产环境才需要的组件。
+将其中的样例邮箱参数"admin@abc.com"修改成自己的邮箱，用来注册LetsEncrypt账号和接收证书到期前提醒。
 
+## LetsEncrypt证书获取脚本
+该脚本适用于Ubuntu、CentOS。需要先安装好LetsEncrypt和Nginx（用来验证域名所有权）。
 
-
-## 数据库安装脚本
-该脚本适用于Ubuntu、macOS。使用方式：
+使用方式：
 ```
-curl -s https://raw.githubusercontent.com/lovego/machine/master/databases.sh | bash -s [-- options...]
+curl -s https://raw.githubusercontent.com/lovego/machine/master/letsencrypt-cert.sh | bash -s -- example.abc.com
 ```
-选项列表：
-1. --redis-server，表示需要安装redis服务器
-2. --mysql-server，表示需要安装mysql服务器
-3. --mongo-server，表示需要安装mongo服务器
+将其中的样例域名参数"example.abc.com"修改成需要获取证书的域名。
 
+## Docker镜像Registry搭建脚本
+该脚本适用于Ubuntu、CentOS。需要先获取Registry域名的证书。
 
+使用方式：
+```
+curl -s https://raw.githubusercontent.com/lovego/machine/master/registry.sh | bash -s -- registry.abc.com
+```
+将其中的样例域名参数"registry.abc.com"修改成需要搭建的Registry的域名。
 
 ## VirtualBox开发机
 我们基于Ubuntu Server 16.04.3，使用上面的安装脚本，生成了一个现成的开发环境虚拟机。导入该虚拟机，就可以立即上手开发。
@@ -46,7 +60,7 @@ curl -s https://raw.githubusercontent.com/lovego/machine/master/databases.sh | b
 
 默认共享了D盘，挂载到虚拟机的/mnt/share目录。如果没有D盘（如Mac用户），将会共享失败，请自行设置共享文件夹。设置步骤如下：
 1. 在虚拟机设置界面，设置好共享文件夹，并记住名称。
-2. 在虚拟机内将/etc/fstab的最后一行中D_DRIVE替换为共享文件夹的名字。
+2. 在虚拟机内将/etc/fstab的最后一行中share替换为共享文件夹的名字。
 3. 在虚拟机内执行sudo mount /mnt/share或重启虚拟机来挂载设置的共享文件夹。
 
 #### 重启网络
@@ -56,15 +70,25 @@ sudo service networking restart
 ```
 
 
-
 ## 自定义设置
-
-#### 1. 设置Doker的非https的镜像仓库（Registry）、镜像加速
-例如，需要把 "192.168.202.12:5000" 设置为http镜像仓库，并且使用 "http://hub-mirror.c.163.com/" 进行镜像加速，执行如下命令：
+#### 1. 设置Doker的镜像加速
+例如，使用 "http://hub-mirror.c.163.com/" 进行镜像加速，执行如下命令：
 ```
 echo '{
   "registry-mirrors": [ "http://hub-mirror.c.163.com/" ]
 }' | sudo tee /etc/docker/daemon.json > /dev/null
 sudo service docker restart
 ```
+
+
+## 数据库安装脚本
+该脚本适用于Ubuntu、macOS。使用方式：
+```
+curl -s https://raw.githubusercontent.com/lovego/machine/master/databases.sh | bash -s [-- options...]
+```
+选项列表：
+1. --redis-server，表示需要安装redis服务器
+2. --mysql-server，表示需要安装mysql服务器
+3. --mongo-server，表示需要安装mongo服务器
+
 
