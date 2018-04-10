@@ -10,7 +10,7 @@ email=$1
 
 main() {
   install_certbot
-  echo '6  6  *  *  *  root  certbot renew --deploy-hook systemctl reload nginx' |
+  echo '6  6  *  *  *  root  certbot renew -q --deploy-hook systemctl reload nginx' |
     sudo tee /etc/cron.d/letsencrypt-renew >/dev/null
   sudo certbot register --agree-tos --email $email --no-eff-email
 }
