@@ -23,7 +23,7 @@ install_certbot() {
     sudo apt-get update
     sudo apt-get install -y --allow-unauthenticated certbot
   else
-    yum_install certbot
+    sudo yum install -y certbot
   fi
 }
 
