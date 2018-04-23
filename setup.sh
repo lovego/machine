@@ -56,12 +56,12 @@ setup_profile() {
     fi
   fi
 
-  source $profile # make alias work
+  source ~/.bashrc # make alias work
   if ! alias ll la >/dev/null; then
-    echo 'alias ll="ls -l" la="ls -a"' >> $profile
+    echo 'alias ll="ls -l" la="ls -a"' >> ~/.bashrc
   fi
   if ! alias grep fgrep egrep >/dev/null; then
-    echo 'alias grep="grep --color" fgrep="fgrep --color" egrep="egrep --color"' >> $profile
+    echo 'alias grep="grep --color" fgrep="fgrep --color" egrep="egrep --color"' >> ~/.bashrc
   fi
 
   if [ -z $EDITOR -o -z $VISUAL ]; then
