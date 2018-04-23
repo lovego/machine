@@ -95,7 +95,7 @@ setup_vim_production() {
 }
 
 install_git() {
-  which git >/dev/null || return
+  which git >/dev/null && return
   install_pkg git
   sudo git config --system color.ui true # for git < 1.8.4
 }
