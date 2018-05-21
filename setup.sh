@@ -103,7 +103,7 @@ install_git() {
 install_golang() {
   which go >/dev/null && return
   if [ "$os" = Darwin ]; then
-    brew_install go
+    brew_install go@1.9
     echo 'export PATH=$PATH:$HOME/go/bin GOPATH=$HOME/go' >> $profile
   else
     wget -T 10 -cO /tmp/go.tar.gz https://dl.google.com/go/go1.9.3.linux-amd64.tar.gz
