@@ -30,6 +30,7 @@ let g:multi_cursor_exit_from_insert_mode = 0
 
 syntax on
 set number ruler hlsearch expandtab shiftwidth=2 tabstop=2 backspace=2
+autocmd filetype go setlocal expandtab
 set fencs=utf8,gbk
 colo desert
 autocmd vimenter * NERDTree
