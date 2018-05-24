@@ -1,0 +1,7 @@
+{
+  "rulers": [ 100 ],
+  "translate_tabs_to_spaces": true,
+  "tab_size": 2,
+  "expand_tabs_on_save": true,
+  "trim_trailing_white_space_on_save": true
+}
