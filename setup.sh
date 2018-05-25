@@ -23,7 +23,7 @@ main() {
   # deploy components
   if [ "$os" = "Linux" ]; then
     install_docker
-    which nginx  >/dev/null || sudo lsof -i:80 >/dev/null || {
+    which nginx  >/dev/null || sudo lsof -i:80 >/dev/null || { # lsof -nP -i4tcp:9200 -stcp:listen
       install_nginx
       $production || setup_nginx_server
     }
