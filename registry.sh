@@ -10,8 +10,9 @@ domain=$1
 
 main() {
   setup_nginx
-  docker run --name registry -p 127.0.0.1:5000:5000 -d --restart=always \
-    -e REGISTRY_STORAGE_DELETE_ENABLED=true  registry:2
+  docker volume create registry
+  docker run --name registry -p 127.0.0.1:5000:5000 -v registry:/var/lib/registry \
+    -d --restart=always -e REGISTRY_STORAGE_DELETE_ENABLED=true registry:2
 }
 
 setup_nginx() {
