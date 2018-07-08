@@ -16,24 +16,6 @@ curl -s https://raw.githubusercontent.com/lovego/machine/master/setup.sh | bash 
 curl -s https://raw.githubusercontent.com/lovego/machine/master/setup.sh | bash -s -- --production
 ```
 
-## LetsEncrypt安装脚本
-该脚本适用于Ubuntu、CentOS。
-
-使用方式：
-```
-curl -s https://raw.githubusercontent.com/lovego/machine/master/letsencrypt.sh | bash -s -- admin@abc.com
-```
-将其中的样例邮箱参数"admin@abc.com"修改成自己的邮箱，用来注册LetsEncrypt账号和接收证书到期前提醒。
-
-## LetsEncrypt证书获取脚本
-该脚本适用于Ubuntu、CentOS。需要先安装好LetsEncrypt和Nginx（用来验证域名所有权）。
-
-使用方式：
-```
-curl -s https://raw.githubusercontent.com/lovego/machine/master/letsencrypt-cert.sh | bash -s -- example.abc.com
-```
-将其中的样例域名参数"example.abc.com"修改成需要获取证书的域名。
-
 ## Docker镜像Registry搭建脚本
 该脚本适用于Ubuntu、CentOS。需要先获取Registry域名的证书。
 
