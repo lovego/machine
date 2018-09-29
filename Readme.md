@@ -36,7 +36,6 @@ curl -s https://raw.githubusercontent.com/lovego/machine/master/registry.sh | ba
   用户名：ubuntu
   密码：  go
 ```
-重要的事情说三遍：不要使用虚拟机自带的窗口界面来操作，这个界面分辨率太低，字体太难看，无法显示非英文字符，无法支持拷贝粘贴。使用你喜欢的终端连接虚拟机操作，生活会更美好。
 
 #### 共享文件夹
 
@@ -66,11 +65,10 @@ sudo service docker restart
 ## 数据库安装脚本
 该脚本适用于Ubuntu、macOS。使用方式：
 ```
-curl -s https://raw.githubusercontent.com/lovego/machine/master/databases.sh | bash -s [-- options...]
+curl -s https://raw.githubusercontent.com/lovego/machine/master/db/setup.sh | bash -s [-- options...]
 ```
 选项列表：
 1. --redis-server，表示需要安装redis服务器
 2. --mysql-server，表示需要安装mysql服务器
 3. --mongo-server，表示需要安装mongo服务器
-
 
