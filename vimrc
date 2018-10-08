@@ -23,19 +23,18 @@ Plugin 'solarnz/thrift.vim'
 call vundle#end()            " required
 filetype plugin indent on    " required
 
-let g:buffergator_viewport_split_policy = "B"
-let g:buffergator_hsplit_size = 3
 let g:multi_cursor_exit_from_visual_mode = 0
 let g:multi_cursor_exit_from_insert_mode = 0
+let g:go_fmt_command = "goimports"
 
 syntax on
+set fencs=utf8,gbk
 set number ruler hlsearch expandtab shiftwidth=2 tabstop=2 backspace=2
 autocmd filetype go setlocal expandtab
-set fencs=utf8,gbk
+" autocmd vimenter * NERDTree
 colo desert
-autocmd vimenter * NERDTree
 highlight ColorColumn ctermbg=255
-set colorcolumn=81
+set colorcolumn=101
 
 " Search for selected text, forwards or backwards.
 vnoremap <silent> * :<C-U>
@@ -48,4 +47,6 @@ vnoremap <silent> # :<C-U>
   \gvy?<C-R><C-R>=substitute(
   \escape(@", '?\.*$^~['), '\_s\+', '\\_s\\+', 'g')<CR><CR>
   \gV:call setreg('"', old_reg, old_regtype)<CR>
+
+syn match markdownError "\w\@<=\w\@="
 
