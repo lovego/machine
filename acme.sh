@@ -16,7 +16,7 @@ set -ex
 
 test -f ~/.acme.sh/acme.sh || curl https://get.acme.sh | sh
 ~/.acme.sh/acme.sh --updateaccount --accountemail "$email"
-~/.acme.sh/acme.sh --issue --dns dns_ali -d "$@"
+~/.acme.sh/acme.sh --issue -d "$@" --dns dns_ali
 mkdir -p /etc/nginx/certs
 ~/.acme.sh/acme.sh --install-cert -d "$1" \
   --fullchain-file /etc/nginx/certs/$1.fullchain --key-file /etc/nginx/certs/$1.key \
