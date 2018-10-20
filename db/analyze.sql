@@ -6,4 +6,4 @@ select relname, n_live_tup, n_dead_tup, case
   to_char(last_analyze, 'YYYY-MM-DD HH:MI') as last_analyze,
   to_char(last_autoanalyze, 'YYYY-MM-DD HH:MI') as last_autoanalyze
 from pg_stat_user_tables
-where relname='company_parts' order by last_autoanalyze;
+order by last_autovacuum;
