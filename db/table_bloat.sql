@@ -59,5 +59,5 @@ FROM (
   ) AS s3
   WHERE NOT is_na
 ) AS s4
-ORDER BY coalesce(bloat_ratio, 0) DESC, schemaname DESC, tblname;
+ORDER BY coalesce(bloat_size, 0) DESC, schemaname DESC, tblname;
 
