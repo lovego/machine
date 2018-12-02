@@ -35,6 +35,7 @@ autocmd filetype go setlocal expandtab
 colo desert
 highlight ColorColumn ctermbg=255
 set colorcolumn=101
+set backupcopy=yes " prevent inode number changes
 
 " Search for selected text, forwards or backwards.
 vnoremap <silent> * :<C-U>

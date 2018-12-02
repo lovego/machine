@@ -4,6 +4,7 @@ syntax on
 set number ruler hlsearch expandtab shiftwidth=2 tabstop=2
 set fencs=utf8,gbk
 colo desert
+set backupcopy=yes " prevent inode number changes
 
 " Search for selected text, forwards or backwards.
 vnoremap <silent> * :<C-U>
