@@ -15,7 +15,7 @@ for db in ${databases//,/ }; do
   echo '
     GRANT USAGE ON SCHEMA public TO READONLY;
     GRANT SELECT ON ALL TABLES IN SCHEMA public TO readonly;
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO readonly;
-  ' | psql -X $db
+    ALTER DEFAULT PRIVILEGES GRANT SELECT ON TABLES TO readonly;
+  ' | psql -X -U userToCreateTables $db
 done
 
