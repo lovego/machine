@@ -116,7 +116,7 @@ install_golang() {
 install_xiaomei() {
   test -e ~/go/bin/xiaomei >/dev/null && return
   go get -d -v github.com/lovego/xiaomei/...
-  go install github.com/lovego/xiaomei/xiaomei
+  go install github.com/lovego/xiaomei
 
   # pull bases images
   if [ $os = "Linux" ]; then
