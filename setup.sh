@@ -21,9 +21,9 @@ main() {
   which wget >/dev/null || install_pkg wget
 
   # deploy components
+  install_docker
   if [ "$os" = "Linux" ]; then
-    install_docker
-    which nginx  >/dev/null || sudo lsof -i:80 >/dev/null || { # lsof -nP -i4tcp:9200 -stcp:listen
+    which nginx >/dev/null || sudo lsof -i:80 >/dev/null || { # lsof -nP -i4tcp:9200 -stcp:listen
       install_nginx
       $production || setup_nginx_server
     }
@@ -119,23 +119,13 @@ install_xiaomei() {
   go install github.com/lovego/xiaomei
 
   # pull bases images
-  if [ $os = "Linux" ]; then
-    docker pull hub.c.163.com/lovego/xiaomei/appserver
-    docker pull hub.c.163.com/lovego/xiaomei/tasks
-    docker pull hub.c.163.com/lovego/xiaomei/nginx
-    docker pull hub.c.163.com/lovego/xiaomei/logc
-    docker pull hub.c.163.com/lovego/xiaomei/godoc
+  docker pull hub.c.163.com/lovego/xiaomei/appserver
+  docker pull hub.c.163.com/lovego/xiaomei/nginx
+  docker pull hub.c.163.com/lovego/xiaomei/logc
+  docker pull hub.c.163.com/lovego/xiaomei/godoc
 
-    ~/go/bin/xiaomei workspace-godoc
-    ~/go/bin/xiaomei workspace-godoc access -s
-  else
-    mkdir -p ~/Library/LaunchAgents
-    wget -O ~/Library/LaunchAgents/godoc.plist https://raw.githubusercontent.com/lovego/machine/master/godoc.plist
-    chmod 644 ~/Library/LaunchAgents/godoc.plist
-    sed -i '' -e "s#%gopath%#$HOME/go#" ~/Library/LaunchAgents/godoc.plist
-    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/godoc.plist
-  fi
-
+  ~/go/bin/xiaomei godoc deploy
+  ~/go/bin/xiaomei godoc access setup
   ~/go/bin/xiaomei auto-complete
 }
 
