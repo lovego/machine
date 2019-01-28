@@ -21,8 +21,8 @@ main() {
   which wget >/dev/null || install_pkg wget
 
   # deploy components
-  install_docker
   if [ "$os" = "Linux" ]; then
+    install_docker
     which nginx >/dev/null || sudo lsof -i:80 >/dev/null || { # lsof -nP -i4tcp:9200 -stcp:listen
       install_nginx
       $production || setup_nginx_server
@@ -118,14 +118,18 @@ install_xiaomei() {
   go get -d -v github.com/lovego/xiaomei/...
   go install github.com/lovego/xiaomei
 
-  # pull bases images
-  docker pull hub.c.163.com/lovego/xiaomei/appserver
-  docker pull hub.c.163.com/lovego/xiaomei/nginx
-  docker pull hub.c.163.com/lovego/xiaomei/logc
-  docker pull hub.c.163.com/lovego/xiaomei/godoc
+  if [ "$os" = "Linux" ]; then
+    # pull bases images
+    docker pull hub.c.163.com/lovego/xiaomei/appserver
+    docker pull hub.c.163.com/lovego/xiaomei/nginx
+    docker pull hub.c.163.com/lovego/xiaomei/logc
+    docker pull hub.c.163.com/lovego/xiaomei/godoc
 
-  ~/go/bin/xiaomei godoc deploy
-  ~/go/bin/xiaomei godoc access setup
+    ~/go/bin/xiaomei godoc deploy
+    ~/go/bin/xiaomei godoc access setup
+  else
+    ~/go/bin/xiaomei godoc run
+  fi
   ~/go/bin/xiaomei auto-complete
 }
 
