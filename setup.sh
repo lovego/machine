@@ -95,7 +95,12 @@ setup_vim_production() {
 }
 
 install_git() {
-  which git >/dev/null && return
+  if [ "$os" = Darwin ]; then
+    # git installed by brew has bash completion, so install it by brew.
+    brew ls --versions git >/dev/null && return
+  else
+    which git >/dev/null && return
+  fi
   install_pkg git
   sudo git config --system color.ui true # for git < 1.8.4
 }
@@ -103,7 +108,7 @@ install_git() {
 install_golang() {
   which go >/dev/null && return
   if [ "$os" = Darwin ]; then
-    brew_install go@1.9
+    brew_install go@1.10
     echo 'export PATH=$PATH:$HOME/go/bin GOPATH=$HOME/go' >> $profile
   else
     wget -T 10 -cO /tmp/go.tar.gz https://dl.google.com/go/go1.9.3.linux-amd64.tar.gz
