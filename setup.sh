@@ -56,7 +56,7 @@ setup_profile() {
     fi
   fi
 
-  source ~/.bashrc # make alias work
+  test -f ~/.bashrc && source ~/.bashrc # make alias work
   if ! alias ll la >/dev/null; then
     echo 'alias ll="ls -l" la="ls -a"' >> ~/.bashrc
   fi
