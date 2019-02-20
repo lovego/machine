@@ -11,8 +11,10 @@ main() {
     esac
   done
 
-  os=$(uname)
   get_profile
+
+  os=$(uname)
+  [ "$os" = "Darwin" ] && install_brew_pkgs
 
   # first of all, make life better.
   setup_sudo_no_password
@@ -38,6 +40,35 @@ main() {
     install_xiaomei
     setup_vim_development
     [ "$os" = Linux ] && setup_virtualbox
+  fi
+}
+
+get_profile() {
+  if test -e ~/.bash_profile; then
+    profile=~/.bash_profile
+  elif test -e  ~/.bash_login; then
+    profile=~/.bash_login
+  else
+    profile=~/.profile
+  fi
+}
+
+install_brew_pkgs() {
+  which brew > /dev/null || /usr/bin/ruby -e \
+    "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  if ! which gls > /dev/null; then
+    brew install coreutils
+    echo 'PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"' >> $profile
+    echo 'MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"' >> $profile
+  fi
+  if ! which gsed > /dev/null; then
+    brew install gnu-sed
+    echo 'PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"' >> $profile
+    echo 'MANPATH="/usr/local/opt/gnu-sed/libexec/gnuman:$MANPATH"' >> $profile
+  fi
+  if ! test -f /usr/local/etc/bash_completion; then
+    brew install bash-completion
+    echo '[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion' >> $profile
   fi
 }
 
@@ -69,15 +100,6 @@ setup_profile() {
   fi
 }
 
-get_profile() {
-  if test -e ~/.bash_profile; then
-    profile=~/.bash_profile
-  elif test -e  ~/.bash_login; then
-    profile=~/.bash_login
-  else
-    profile=~/.profile
-  fi
-}
 
 setup_screen() {
   test -f ~/.screenrc && return
@@ -296,14 +318,10 @@ yum_install() {
 }
 
 brew_install() {
-  which brew > /dev/null ||
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   HOMEBREW_NO_AUTO_UPDATE=1 brew install "$@"
 }
 
 brew_cask_install() {
-  which brew > /dev/null ||
-    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   HOMEBREW_NO_AUTO_UPDATE=1 brew cask install "$@"
 }
 
