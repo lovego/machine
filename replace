@@ -21,4 +21,4 @@ fi
 
 set -x
 
-sed -i "s#$old#$new#g" $(fgrep "$old" $targets -rl)
+sed -i -E "s#$old#$new#g" $(grep -E "$old" $targets -rl)
