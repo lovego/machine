@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+
+if [[ $# < 2 || -z "$1" || -z "$2" ]]; then
+  cmd=$(basename $0)
+  echo "使用方法： $cmd <字符串> <新的字符串> [<目标目录/文件> ...]"
+  echo "$cmd 将当前目录或者<目标目录/文件>下的所有<字符串>替换为<新的字符串>."
+  exit
+fi
+
+old=$1 new=$2
+if [[ $# = 2 ]]; then
+  targets='.'
+else
+  targets=${@:2:}
+fi
+
+set -x
+
+sed -i "s#$old#$new#g" $(fgrep "$old" $targets -rl)
