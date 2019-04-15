@@ -16,9 +16,8 @@ old=$1 new=$2
 if [[ $# = 2 ]]; then
   targets='.'
 else
-  targets=${@:2:}
+  targets=${@:3}
 fi
 
 set -x
-
 sed -i -E "s#$old#$new#g" $(grep -E "$old" $targets -rl)
