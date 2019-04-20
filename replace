@@ -20,4 +20,4 @@ else
 fi
 
 set -x
-sed -i -E "s#$old#$new#g" $(grep -E "$old" $targets -rl)
+sed -i -E "s#$old#$new#g" $(grep -E "$old" $targets -Irl)
