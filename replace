@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [[ $# -lt 2 || -z "$1" || -z "$2" ]]; then
+if [[ $# -lt 2 || -z "$1" ]]; then # $2 may be empty for delete.
   cmd=$(basename $0)
   echo "使用方法： $cmd <正则> <替换值> [<目标目录/文件> ...]"
   echo "$cmd 将文件内的匹配<正则>的所有字符串替换为<替换值>.
