@@ -1,7 +1,7 @@
 #!/bin/bash
 shopt -s extglob
 
-targets="list create update delete type type.go libs cache"
+targets="list detail create update delete type type.go libs cache"
 
 exists=''
 for i in $targets; do
