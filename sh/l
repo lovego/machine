@@ -1,0 +1,17 @@
+#!/bin/bash
+shopt -s extglob
+
+targets="list create update delete type type.go libs cache"
+
+exists=''
+for i in $targets; do
+  test -e $i && exists="$exists $i"
+done
+
+if test -n "$exists"; then
+  ls -dU --color "${@}" $exists !(${exists// /|})
+else
+  ls "${@}"
+fi
+
+
