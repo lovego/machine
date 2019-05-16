@@ -1,17 +1,26 @@
 #!/bin/bash
 shopt -s extglob
 
-targets="list detail create update delete type type.go libs cache"
+prefixes="list detail create update delete save type flags validate libs cache"
 
 exists=''
-for i in $targets; do
-  test -e $i && exists="$exists $i"
+for i in $prefixes; do
+  matched=$(echo $i*)
+  test "$matched" != "$i*" && {
+    if test -z "$exists"; then
+      exists="$matched"
+    else
+      exists="$exists $matched"
+    fi
+  }
 done
 
 if test -n "$exists"; then
-  ls -dU --color "${@}" $exists !(${exists// /|})
+  othersPattern="!(${exists// /|})"
+  others=$(echo $othersPattern)
+  test "$others" = "$othersPattern" && others=''
+  ls -dU --color "${@}" $exists $others
 else
   ls "${@}"
 fi
-
 
