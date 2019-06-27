@@ -75,7 +75,7 @@ install_brew_pkgs() {
 setup_sudo_no_password() {
   username=$(id -nu)
   local file="/etc/sudoers.d/$username"
-  [ -f "$file" ] || echo "$username  ALL=NOPASSWD: ALL" | sudo tee "$file" > /dev/null
+  [ -f "$file" ] || echo "$username  ALL=(ALL) NOPASSWD: ALL" | sudo tee "$file" > /dev/null
 }
 
 setup_profile() {
