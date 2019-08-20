@@ -1,21 +1,31 @@
 #!/bin/bash
 
-databases='accounts, goods, orders, manage'
+echo "CREATE USER readonly WITH PASSWORD 'password';" | psql -X postgres
 
-echo "
-  CREATE USER readonly WITH PASSWORD 'password';
-  GRANT CONNECT ON DATABASE $databases TO readonly;
-" | psql -X
+grant_readonly_to_database() {
+  local greenColor='\033[0;32m'
+  local noColor='\033[0m'
+  local db=$1
+  echo -e "\nDatabase: ${greenColor}$db${noColor}"
 
-greenColor='\033[0;32m'
-noColor='\033[0m'
-
-for db in ${databases//,/ }; do
-  echo -e "\ndatabase: ${greenColor}$db${noColor}"
+  echo "GRANT CONNECT ON DATABASE $db TO readonly;" | psql -X postgres
   echo '
-    GRANT USAGE ON SCHEMA public TO READONLY;
-    GRANT SELECT ON ALL TABLES IN SCHEMA public TO readonly;
-    ALTER DEFAULT PRIVILEGES GRANT SELECT ON TABLES TO readonly;
-  ' | psql -X -U userToCreateTables $db
-done
+ALTER DEFAULT PRIVILEGES GRANT SELECT ON TABLES TO readonly;
 
+DO $do$
+DECLARE
+  sch text;
+BEGIN
+  FOR sch IN SELECT nspname FROM pg_namespace
+  LOOP
+    EXECUTE format($$ GRANT USAGE ON SCHEMA %I TO readonly $$, sch);
+    EXECUTE format($$ GRANT SELECT ON ALL TABLES IN SCHEMA %I TO readonly $$, sch);
+  END LOOP;
+END;
+$do$;
+' | psql -X $db
+}
+
+for db in "$@"; do
+  grant_readonly_to_database "$db"
+done
