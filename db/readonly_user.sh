@@ -10,7 +10,7 @@ grant_readonly_to_database() {
 
   echo "GRANT CONNECT ON DATABASE $db TO readonly;" | psql -X postgres
   echo '
-ALTER DEFAULT PRIVILEGES GRANT SELECT ON TABLES TO readonly;
+ALTER DEFAULT PRIVILEGES FOR USER xxx GRANT SELECT ON TABLES TO readonly;
 
 DO $do$
 DECLARE
