@@ -10,8 +10,6 @@ grant_readonly_to_database() {
 
   echo "GRANT CONNECT ON DATABASE $db TO readonly;" | psql -X postgres
   echo '
-ALTER DEFAULT PRIVILEGES FOR USER xxx GRANT SELECT ON TABLES TO readonly;
-
 DO $do$
 DECLARE
   sch text;
@@ -20,6 +18,7 @@ BEGIN
   LOOP
     EXECUTE format($$ GRANT USAGE ON SCHEMA %I TO readonly $$, sch);
     EXECUTE format($$ GRANT SELECT ON ALL TABLES IN SCHEMA %I TO readonly $$, sch);
+    EXECUTE format($$ ALTER DEFAULT PRIVILEGES FOR USER xxx IN SCHEMA %I GRANT SELECT ON TABLES TO readonly;
   END LOOP;
 END;
 $do$;
