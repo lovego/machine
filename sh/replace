@@ -20,4 +20,5 @@ else
 fi
 
 set -x
-sed -i -E "s#$old#$new#g" $(grep -E "$old" $targets -Irl)
+sed --version |& fgrep -q GNU && suffix= || suffix="''" # 管道的优先级比逻辑操作符高
+sed -i $suffix -E "s#$old#$new#g" $(grep -E "$old" $targets -Irl)
